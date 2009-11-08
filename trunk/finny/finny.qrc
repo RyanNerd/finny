@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="finny" >
+    <file>assets/settings.png</file>
+    <file>assets/radioshark.png</file>
+    <file>assets/left_up.png</file>
+    <file>assets/right_up.png</file>
+    <file>assets/fast_left_up.png</file>
+    <file>assets/fast_right_up.png</file>
+  </qresource>
+</RCC>
