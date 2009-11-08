@@ -73,6 +73,9 @@ protected:
 	bool CheckRadioshark(void);
 	QTimer m_CheckRadiosharkTimer;
 	
+	//Save off/load settings
+	FinnySettings m_Settings;
+	
 private slots:
 	void OnFreqUp(void);
 	void OnFreqDown(void);

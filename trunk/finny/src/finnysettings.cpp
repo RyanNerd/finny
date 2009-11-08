@@ -55,7 +55,12 @@ void Preset::Write( ofstream& outfile)
 	}else{
 		bnd = "FM";
 	}
-	outfile<<"PRESET: "<<bnd<<" "<<m_Frequency<<" "<<m_Description<<endl;
+	outfile<<bnd<<" "<<m_Frequency<<" "<<m_Description<<endl;
+}
+void Preset::WritePreset( ofstream& outfile)
+{
+	outfile<<"PRESET: ";
+	this->Write(outfile);
 }
 void Preset::Write( ofstream& outfile, bool AM, float freq, string& desc)
 {
@@ -97,4 +102,65 @@ void Preset::Read( ifstream& infile, bool& AM, float& freq, string& desc)
 	infile>>freq;
 	getline(infile, desc);
 	desc = desc.substr(desc.find_first_not_of(' '));
+}
+void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
+{
+	//We've already hit a "SETTING:" tag in the filestream,
+	//so now we just parse the rest of the line.
+	//It will be of the form "key" and the rest.
+	string key;
+	infile>>key;
+	
+	if(key == "StartFreq")
+	{
+		settings.StartFreq.Read(infile);
+	}else if( key == "UpdateStartFreqOnClose")
+	{
+		FinnySettings::ReadBool(infile,settings.UpdateStartFreqOnClose);
+	}else if( key == "StartVolume")
+	{
+		FinnySettings::ReadFloat(infile,settings.StartVolume);
+	}else if(key == "UpdateStartVolumeOnClose")
+	{
+		FinnySettings::ReadBool(infile,settings.UpdateStartVolumeOnClose);
+	}
+}
+void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
+{
+	outfile<<"SETTING: StartFreq ";
+	settings.StartFreq.Write(outfile);
+	outfile<<"SETTING: UpdateStartFreqOnClose ";
+	FinnySettings::WriteBool(outfile,settings.UpdateStartFreqOnClose);
+	outfile<<"SETTING: StartVolume ";
+	FinnySettings::WriteFloat(outfile,settings.StartVolume);
+	outfile<<"SETTING: UpdateStartVolumeOnClose ";
+	FinnySettings::WriteBool(outfile,settings.UpdateStartVolumeOnClose);
+}
+void FinnySettings::ReadBool(ifstream& infile, bool& value)
+{
+	string val;
+	infile >> val;
+	if( val == "TRUE" || val == "True" || val == "true")
+	{
+		value = true;
+	}else{
+		value = false;
+	}
+}
+void FinnySettings::WriteBool(ofstream& outfile, bool value)
+{
+	if(value == true)
+	{
+		outfile<<" TRUE"<<endl;
+	}else{
+		outfile<<" FALSE"<<endl;
+	}
+}
+void FinnySettings::ReadFloat(ifstream& infile, float& value)
+{
+	infile>>value;
+}
+void FinnySettings::WriteFloat(ofstream& outfile, float value)
+{
+	outfile<<value<<endl;
 }

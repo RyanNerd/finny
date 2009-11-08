@@ -11,7 +11,6 @@ void AudioInterface::run()
 		return;
 	}
 		
-	UpdateVolume(0);
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
 												!=GST_STATE_CHANGE_SUCCESS )
 	{
@@ -218,6 +217,16 @@ void AudioInterface::UpdateVolume( int vol )
 	double value = ((double)vol)/100.0;
 	g_object_set( G_OBJECT ( m_pMixer ), "volume", value,NULL );
 
+}
+int AudioInterface::GetVolume(void)
+{
+	if(!m_pMixer )
+	{
+		return 0;
+	}
+	double value = 0.0;
+	g_object_get( G_OBJECT ( m_pMixer ), "volume", &value,NULL );
+	return (int)(value*100.0);
 }
 void AudioInterface::Mute(bool muted)
 {

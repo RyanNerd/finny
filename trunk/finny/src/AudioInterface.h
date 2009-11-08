@@ -71,6 +71,7 @@ public:
 	void stop();
 	void Close(void);
 	void UpdateVolume( int vol );
+	int GetVolume(void);
 	void Mute(bool muted);
 	void Record(bool start);
 	float GetAudioLevel(void);

@@ -34,15 +34,14 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 		m_CheckRadiosharkTimer.start(1000);
 	}
 	
-	
 	//We want Record,SavePreset,Remove preset not visible at start
 	Record->setVisible(false);
-	
 
-	
 }
 void MainWindowImpl::closeEvent(QCloseEvent *event)
  {
+ 	this->SaveSettings();
+ 	
 	if(m_pRadioshark)
 	{
 		m_pRadioshark->Close();
@@ -52,8 +51,6 @@ void MainWindowImpl::closeEvent(QCloseEvent *event)
 	
 	m_AudioInterface.stop();
 	m_AudioInterface.Close();
-	
-	this->SaveSettings();
 	
 	QMainWindow::closeEvent(event);
 
@@ -88,14 +85,25 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	if( m_AudioInterface.Open(dev,string("hw:0,0")) )
 //	if( m_AudioInterface.Open(dev,string("default")) )
 	{
-		//TODO: Set the "default" frequency (either last or a specific one)
-		//TODO: Set the "default" volume (either last of a specific level)
+		//Set the start frequency
+		if(m_Settings.StartFreq.GetBand() == Preset::AM)
+		{
+			m_pRadioshark->SetAMFreq(m_Settings.StartFreq.GetFreq());
+		}else{
+			m_pRadioshark->SetFMFreq(m_Settings.StartFreq.GetFreq());
+		}
+		
+		//Set the start volume
+		OnVolume((int)m_Settings.StartVolume);
+		Volume->setValue((int)m_Settings.StartVolume);
+		
 		m_AudioInterface.run();
 	}else{
 		//Uh-oh.
 		Frequency->setText("GSTREAMER PROBLEM");
 		return false;
 	}
+	this->UpdateFrequencyDisplay();
 	return true;
 }
 void MainWindowImpl::OnCheckRadiosharkTimer(void)
@@ -354,6 +362,8 @@ void MainWindowImpl::LoadSettings(void)
 			newitem->setData(am,Qt::UserRole + 2);
 			newitem->setText(QString(desc.c_str()));
 			m_Presets.insertRow(m_Presets.rowCount(),newitem);
+		}else if(tag == "SETTING:"){
+			FinnySettings::LoadSetting(m_Settings,infile);
 		}
 	}
 }
@@ -377,6 +387,26 @@ void MainWindowImpl::SaveSettings(void)
 		string std_desc(desc.toAscii());
 		Preset::Write(outfile,am,freq,std_desc);
 	}
+	//And write the rest of our settings
+	if( m_Settings.UpdateStartFreqOnClose && m_pRadioshark )
+	{
+		Radioshark::Band band = m_pRadioshark->GetBand();
+		if( band == Radioshark::AM)
+		{
+			m_Settings.StartFreq = Preset(Preset::AM,m_pRadioshark->GetAMFreq());
+		}else{
+			m_Settings.StartFreq = Preset(Preset::FM,m_pRadioshark->GetFMFreq());
+		}
+		
+	}
+	if( m_Settings.UpdateStartVolumeOnClose)
+	{
+		float volume = (float) m_AudioInterface.GetVolume();
+		m_Settings.StartVolume = volume;
+	}
+	FinnySettings::WriteSettings(m_Settings,outfile);
+	
+	outfile.close();
 }
 void MainWindowImpl::OnFastUp(void)
 {
