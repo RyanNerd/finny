@@ -49,9 +49,6 @@ public:
 	
 protected:
 
-	float m_FMFreq;
-	float m_AMFreq;
-	
 	AudioInterface m_AudioInterface;
 	Radioshark2Interface* m_pRadioshark;
 	

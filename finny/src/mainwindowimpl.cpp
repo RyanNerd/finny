@@ -9,8 +9,6 @@
 //
 MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f) 
 	: QMainWindow(parent, f)
-	,m_FMFreq(99.5f)
-	,m_AMFreq(660.0f)
 	,m_pRadioshark(NULL)
 {
 	setupUi(this);
