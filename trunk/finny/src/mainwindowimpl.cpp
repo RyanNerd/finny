@@ -19,10 +19,21 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	
 	this->LoadSettings();
 
-	
-	connect(&m_CheckRadiosharkTimer,SIGNAL(timeout()),this,
+	if( this->CheckRadioshark() == true)
+	{
+		//Start the timer for visualization update.
+		connect(&m_LevelTimer,SIGNAL(timeout()),this,SLOT(OnLevelTimer()));
+		m_LevelTimer.start(40);
+		
+	}else{
+		//Couldn't connect to radioshark
+		//We'll start a timer to check for a recently attached one
+		//at 1Hz.
+		connect(&m_CheckRadiosharkTimer,SIGNAL(timeout()),this,
 									SLOT(OnCheckRadiosharkTimer()));
-	m_CheckRadiosharkTimer.start(1000);
+		m_CheckRadiosharkTimer.start(1000);
+	}
+	
 	
 	//We want Record,SavePreset,Remove preset not visible at start
 	Record->setVisible(false);
@@ -47,14 +58,14 @@ void MainWindowImpl::closeEvent(QCloseEvent *event)
 	QMainWindow::closeEvent(event);
 
 }
-void MainWindowImpl::OnCheckRadiosharkTimer(void)
+bool  MainWindowImpl::CheckRadioshark(void)
 {
 	string dev;
 	if( FindRadioshark(dev) == false )
 	{
 		//No device available... we'll wait another second and check again
 		Frequency->setText("NO RADIOSHARK");
-		return;
+		return false;
 	}
 	//Found the device. Try to set up the system.
 	m_pRadioshark = new Radioshark2Interface();
@@ -62,9 +73,15 @@ void MainWindowImpl::OnCheckRadiosharkTimer(void)
 	{
 		if( m_pRadioshark->Open() == false)
 		{
-			//PROBLEM-- What could it be?
+			//No hid device available..
+			Frequency->setText("HID PROBLEM");
+			return false;
 		}
 		this->UpdateFrequencyDisplay();
+	}else{
+		//no radioshark yet!
+		Frequency->setText("HID PROBLEM");
+		return false;
 	}
 	
 	//Open the actual audio capture.
@@ -75,15 +92,23 @@ void MainWindowImpl::OnCheckRadiosharkTimer(void)
 		//TODO: Set the "default" volume (either last of a specific level)
 		m_AudioInterface.run();
 	}else{
-		//PROBLEM!!!
+		//Uh-oh.
+		Frequency->setText("GSTREAMER PROBLEM");
+		return false;
 	}
+	return true;
+}
+void MainWindowImpl::OnCheckRadiosharkTimer(void)
+{
+	if( this->CheckRadioshark() == true )
+	{
+		//Finished setup, let's stop the timer
+		this->m_CheckRadiosharkTimer.stop();
 	
-	//Finished setup, let's stop the timer
-	this->m_CheckRadiosharkTimer.stop();
-	
-	//Start the timer for visualization update.
-	connect(&m_LevelTimer,SIGNAL(timeout()),this,SLOT(OnLevelTimer()));
-	m_LevelTimer.start(40);
+		//Start the timer for visualization update.
+		connect(&m_LevelTimer,SIGNAL(timeout()),this,SLOT(OnLevelTimer()));
+		m_LevelTimer.start(40);
+	}
 }
 
 bool MainWindowImpl::FindRadioshark(string& device)
