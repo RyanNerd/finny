@@ -70,6 +70,7 @@ protected:
 	
 	//Look for the Radioshark! (audio capture device)
 	bool FindRadioshark(string& device);
+	bool CheckRadioshark(void);
 	QTimer m_CheckRadiosharkTimer;
 	
 private slots:
