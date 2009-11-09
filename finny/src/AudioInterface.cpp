@@ -179,7 +179,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	{
 		return false;
 	}
-	m_pVisualization =  gst_element_factory_make("monoscope", "monoscope");
+	m_pVisualization =  gst_element_factory_make("monoscope", "visualization");
 	if(!m_pAppSink)
 	{
 		return false;
@@ -304,8 +304,7 @@ bool AudioInterface::GetVisualizationFrame( char** data, int& width, int& height
 		return false;
 	}
 	//For now
-	width = 256;
-	height = 128;
+	this->SetVisualizationSize(width,height);
 	if( buffersize != GST_BUFFER_SIZE(buffer) || *data== NULL )
 	{
 		buffersize = GST_BUFFER_SIZE(buffer);
@@ -347,7 +346,43 @@ bool AudioInterface::GetAudioFormat( AudioFormat& format)
 	gst_structure_get_int (str, "width", &format.width);
 	gst_structure_get_int (str, "depth", &format.depth);
 	gst_structure_get_int (str, "endianness", &format.endianness);
-
+	
+	gst_caps_unref(caps);
+	gst_object_unref(pad);
+	return true;
+}
+void AudioInterface::SetVisualizationSize(int& width_hint, int& height_hint)
+{
+	if( m_pVisualization == NULL)
+	{
+		width_hint = 0;
+		height_hint = 0;
+		return;
+	}
+	
+	if(width_hint < 0 || height_hint < 0)
+	{
+		//We just want to GET the current width, height
+	}else{
+		//Can we set the visualization width height to these values?
+	}
+	GstPad* pad = gst_element_get_pad ( m_pVisualization, "src");
+	if(!pad)
+	{
+		return;
+	}
+	GstCaps *caps = gst_pad_get_negotiated_caps(pad);
+	if(!caps)
+	{
+		return;
+	}
+	const GstStructure *str = gst_caps_get_structure (caps, 0);
+	gst_structure_get_int (str, "width", &width_hint);
+	gst_structure_get_int (str, "height", &height_hint);
+	
+	gst_caps_unref(caps);
+	gst_object_unref(pad);
+	
 }
 
 //	GstPad *teepad1;

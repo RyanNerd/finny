@@ -77,6 +77,7 @@ public:
 	float GetAudioLevel(void);
 	bool GetAudioFormat( AudioFormat& format);
 	bool GetVisualizationFrame( char** data, int& width, int& height,int& buffersize);
+	void SetVisualizationSize(int& width_hint, int& height_hint);
 };
 
 #endif // __AUDIOINTERFACE_H__
