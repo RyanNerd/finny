@@ -25,7 +25,9 @@ public:
 	};
 	
 	Preset::Band GetBand();
+	void SetBand( Preset::Band bnd);
 	float GetFreq();
+	void SetFreq(float freq);
 	string& GetDescription();
 	void SetDescription( string& desc);
 	
