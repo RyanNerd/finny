@@ -33,6 +33,14 @@ Preset::Band Preset::GetBand()
 {
 	return m_Band;
 }
+void Preset::SetBand( Preset::Band bnd)
+{
+	m_Band = bnd;
+}
+void Preset::SetFreq(float freq)
+{
+	this->m_Frequency = freq;
+}
 float Preset::GetFreq()
 {
 	return m_Frequency;

@@ -310,9 +310,11 @@ void MainWindowImpl::OnPreset(const QModelIndex &index)
 void MainWindowImpl::OnSettings(void)
 {
 	SettingsDialog settings;
+	settings.Set(m_Settings);
 	if( settings.exec() == QDialog::Accepted )
 	{
 		//update our settings from the dialog.
+		settings.Get(m_Settings);
 	}
 }
 void MainWindowImpl::OnLevelTimer(void)
