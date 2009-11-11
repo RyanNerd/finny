@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>372</height>
+    <width>577</width>
+    <height>398</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -138,12 +138,12 @@
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
-                 <normaloff>:/finny/assets/fast_left_up.png</normaloff>:/finny/assets/fast_left_up.png</iconset>
+                 <normaloff>:/finny/assets/fast_left_arrow.png</normaloff>:/finny/assets/fast_left_arrow.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
-                 <width>64</width>
-                 <height>64</height>
+                 <width>44</width>
+                 <height>44</height>
                 </size>
                </property>
                <property name="autoRepeat">
@@ -176,12 +176,12 @@
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
-                 <normaloff>:/finny/assets/left_up.png</normaloff>:/finny/assets/left_up.png</iconset>
+                 <normaloff>:/finny/assets/left_arrow.png</normaloff>:/finny/assets/left_arrow.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
-                 <width>64</width>
-                 <height>64</height>
+                 <width>44</width>
+                 <height>44</height>
                 </size>
                </property>
                <property name="autoRepeat">
@@ -201,14 +201,26 @@
              <item>
               <widget class="QPushButton" name="Frequency">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>150</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>150</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="baseSize">
                 <size>
-                 <width>300</width>
+                 <width>150</width>
                  <height>75</height>
                 </size>
                </property>
@@ -243,12 +255,12 @@
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
-                 <normaloff>:/finny/assets/right_up.png</normaloff>:/finny/assets/right_up.png</iconset>
+                 <normaloff>:/finny/assets/right_arrow.png</normaloff>:/finny/assets/right_arrow.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
-                 <width>64</width>
-                 <height>64</height>
+                 <width>44</width>
+                 <height>44</height>
                 </size>
                </property>
                <property name="autoRepeat">
@@ -278,12 +290,12 @@
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
-                 <normaloff>:/finny/assets/fast_right_up.png</normaloff>:/finny/assets/fast_right_up.png</iconset>
+                 <normaloff>:/finny/assets/fast_right_arrow.png</normaloff>:/finny/assets/fast_right_arrow.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
-                 <width>64</width>
-                 <height>64</height>
+                 <width>44</width>
+                 <height>44</height>
                 </size>
                </property>
                <property name="autoRepeat">
@@ -349,6 +361,10 @@
                <property name="text">
                 <string>Recording</string>
                </property>
+               <property name="icon">
+                <iconset resource="../finny.qrc">
+                 <normaloff>:/finny/assets/recording_tape.png</normaloff>:/finny/assets/recording_tape.png</iconset>
+               </property>
                <property name="checkable">
                 <bool>true</bool>
                </property>
@@ -367,6 +383,10 @@
                </property>
                <property name="text">
                 <string>Visualization</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../finny.qrc">
+                 <normaloff>:/finny/assets/vizualization.png</normaloff>:/finny/assets/vizualization.png</iconset>
                </property>
                <property name="checkable">
                 <bool>true</bool>
@@ -530,6 +550,10 @@
                </property>
                <property name="text">
                 <string>Record</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../finny.qrc">
+                 <normaloff>:/finny/assets/record_button.png</normaloff>:/finny/assets/record_button.png</iconset>
                </property>
                <property name="checkable">
                 <bool>true</bool>
