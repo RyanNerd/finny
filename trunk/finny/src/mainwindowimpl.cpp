@@ -277,7 +277,7 @@ void MainWindowImpl::OnSavePreset(void)
 	newitem->setData(fmam,Qt::UserRole + 2);
 	QString band;
 	if(!fmam)
-	{void OnPreset(const QModelIndex &index);
+	{
 		band.sprintf("FM %3.1f",freq);
 	}else{
 		band.sprintf("AM %4.0f",freq);
@@ -444,10 +444,13 @@ void MainWindowImpl::OnFastDown(void)
 void MainWindowImpl::OnRemovePreset(void)
 {
 	//Find which preset is selected
-	//QModelIndexList indices = Presets->selectionMode().selectedIndexes();
-	//indices->
-	//QList< QModelIndex> list;
-	//list = Presets->selectedIndexes();
+	QModelIndexList indices = Presets->selectionModel()->selectedRows();
+	QModelIndexList::iterator i;
+	for(i = indices.begin();i!=indices.end();++i)
+	{
+		QStandardItem* item = m_Presets.itemFromIndex(*i);
+		m_Presets.removeRow(item->row(),QModelIndex());
+	}
 }
 void  MainWindowImpl::GetAudioFormat(void)
 {
