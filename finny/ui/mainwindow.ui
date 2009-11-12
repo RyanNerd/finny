@@ -80,28 +80,49 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSlider" name="Volume">
-         <property name="font">
-          <font>
-           <weight>50</weight>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="singleStep">
-          <number>5</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="invertedAppearance">
-          <bool>false</bool>
-         </property>
-         <property name="invertedControls">
-          <bool>false</bool>
-         </property>
-         <property name="tickPosition">
-          <enum>QSlider::TicksBothSides</enum>
-         </property>
+        <widget class="QWidget" name="widget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>24</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>24</number>
+          </property>
+          <item>
+           <widget class="QSlider" name="Volume">
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="singleStep">
+             <number>5</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+            <property name="invertedControls">
+             <bool>false</bool>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBothSides</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -350,7 +371,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="ShowRecording">
+              <widget class="QPushButton" name="Mute">
                <property name="font">
                 <font>
                  <pointsize>10</pointsize>
@@ -359,17 +380,15 @@
                 </font>
                </property>
                <property name="text">
-                <string>Recording</string>
+                <string>Mute</string>
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
-                 <normaloff>:/finny/assets/recording_tape.png</normaloff>:/finny/assets/recording_tape.png</iconset>
+                 <normaloff>:/finny/assets/sound_on.png</normaloff>
+                 <activeon>:/finny/assets/sound_off.png</activeon>:/finny/assets/sound_on.png</iconset>
                </property>
                <property name="checkable">
                 <bool>true</bool>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -408,6 +427,10 @@
                <property name="text">
                 <string>Presets</string>
                </property>
+               <property name="icon">
+                <iconset resource="../finny.qrc">
+                 <normaloff>:/finny/assets/onebit_39.png</normaloff>:/finny/assets/onebit_39.png</iconset>
+               </property>
                <property name="checkable">
                 <bool>true</bool>
                </property>
@@ -417,7 +440,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="Mute">
+              <widget class="QPushButton" name="ShowRecording">
                <property name="font">
                 <font>
                  <pointsize>10</pointsize>
@@ -426,15 +449,17 @@
                 </font>
                </property>
                <property name="text">
-                <string>Mute</string>
+                <string>Recording</string>
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
-                 <normaloff>:/finny/assets/sound_on.png</normaloff>
-                 <activeon>:/finny/assets/sound_off.png</activeon>:/finny/assets/sound_on.png</iconset>
+                 <normaloff>:/finny/assets/onebit_12.png</normaloff>:/finny/assets/onebit_12.png</iconset>
                </property>
                <property name="checkable">
                 <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -573,6 +598,10 @@
                <property name="text">
                 <string>Save Preset</string>
                </property>
+               <property name="icon">
+                <iconset resource="../finny.qrc">
+                 <normaloff>:/finny/assets/onebit_34.png</normaloff>:/finny/assets/onebit_34.png</iconset>
+               </property>
               </widget>
              </item>
              <item>
@@ -586,6 +615,10 @@
                </property>
                <property name="text">
                 <string>RemovePreset</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../finny.qrc">
+                 <normaloff>:/finny/assets/onebit_33.png</normaloff>:/finny/assets/onebit_33.png</iconset>
                </property>
               </widget>
              </item>
