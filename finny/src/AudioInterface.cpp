@@ -235,10 +235,6 @@ void AudioInterface::Mute(bool muted)
 		return;
 	}
 	g_object_set( G_OBJECT ( m_pMixer ), "mute", muted,NULL );
-	if(!muted)
-	{
-		UpdateVolume(0);
-	}
 
 }
 void AudioInterface::Record(bool start)
