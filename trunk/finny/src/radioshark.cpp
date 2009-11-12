@@ -192,9 +192,44 @@ void Radioshark2Interface::AMFreqDown( float step /*= 1.0f*/ )
 
 void Radioshark2Interface::SetRedLED( bool on )
 {
+		if(!m_pHid)
+	{
+		return;
+	}
 	
+	m_Band = Radioshark::FM;
+	
+	unsigned char PACKET[SEND_PACKET_LENGTH] = { 0xc1, 0x02, 0x00, 0x04, 0x00, 0x00, 0x00 };
+ 	PACKET[0] = 0x84;
+	if ( on )
+	{
+		PACKET[1] = (char)0x1;
+	}else{
+		PACKET[1] = (char)0x2;
+	}
+
+	hid_return ret = hid_interrupt_write( m_pHid , WRITE_EP, (char*)PACKET,
+											SEND_PACKET_LENGTH, 10000);
 }
 void Radioshark2Interface::SetBlueLED( float zero_to_one )
 {
-	
+	if(!m_pHid)
+	{
+		return;
+	}
+	int intensity = (int)(127.0f * zero_to_one );
+	if(intensity < 0)
+	{
+		intensity = 0;
+	}else if( intensity >127)
+	{
+		intensity = 127;
+	}
+	unsigned char PACKET[SEND_PACKET_LENGTH] = { 0xc1, 0x02, 0x00, 0x04, 0x00, 0x00, 0x00 };
+	PACKET[0] = 0x83;
+	PACKET[1] = (char)(intensity);
+
+	hid_return ret = hid_interrupt_write( m_pHid , WRITE_EP, (char*)PACKET,
+											SEND_PACKET_LENGTH, 10000);
 }
+
