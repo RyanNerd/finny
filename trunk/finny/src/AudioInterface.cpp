@@ -34,6 +34,7 @@ AudioInterface::AudioInterface()
 	:m_pElementIn(NULL)
 	,m_pElementOut(NULL)
 	,m_pPipeline(NULL)
+	,m_pVisualizationBin(NULL)
 {
 
 };
@@ -168,12 +169,30 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	gst_element_add_pad (m_pMP3Recorder, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (GST_OBJECT (pad));
 	
-	//connect the ghost pad to the tee in the pipeline
-	//gst_bin_add_many( GST_BIN(m_pPipeline),m_pMP3Recorder,NULL);
-	//gst_element_link( m_pTeeOne , m_pMP3Recorder);
+	if( this->ConstructVisualizationBin() == false)
+	{
+		return false;
+	}
+	//Add in the visualization
+	gst_bin_add( GST_BIN(m_pPipeline) , m_pVisualizationBin );
+	if( gst_element_link( m_pTeeOne, m_pVisualizationBin ) == FALSE )
+	{
+		return false;
+	}
+	return true;
+};
+bool AudioInterface::ConstructVisualizationBin( void )
+{
+	if(m_pVisualizationBin)
+	{
+		return false;//don't initialize it twice!
+	}
+	m_pVisualizationBin = gst_bin_new ("VIZ");
+	if(!m_pVisualizationBin)
+	{
+		return false;
+	}
 	
-	//Lastly, connect an appsink to the tee to allow application
-	//fetching of data from the pipeline
 	m_pQueue3= gst_element_factory_make("queue", "queue3");
 	if(!m_pQueue2)
 	{
@@ -192,16 +211,21 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	gst_app_sink_set_drop(GST_APP_SINK(m_pAppSink),TRUE);
 	gst_app_sink_set_max_buffers (GST_APP_SINK(m_pAppSink),1);
 	
-	gst_bin_add_many (GST_BIN (m_pPipeline),m_pQueue3,m_pVisualization,m_pAppSink,NULL);
-	if ( gst_element_link_many (m_TeeTwo,m_pQueue3, m_pVisualization, m_pAppSink,
+	gst_bin_add_many (GST_BIN (m_pVisualizationBin),m_pQueue3,m_pVisualization,
+												m_pAppSink,NULL);
+	if ( gst_element_link_many (m_pQueue3, m_pVisualization, m_pAppSink,
 									 NULL ) == FALSE )
 	{
 		return false;
 	}
-	
+	//Conneect src and sink ghost pads up to input and output of bin
+	//Need a "ghost pad" on the MP3 recorder sink (input)
+	GstPad *pad = gst_element_get_static_pad (m_pQueue3, "sink");
+	gst_element_add_pad (m_pVisualizationBin, gst_ghost_pad_new ("sink", pad));
+	gst_object_unref (GST_OBJECT (pad));
 
 	return true;
-};
+}
 	
 void AudioInterface::Close(void)
 {

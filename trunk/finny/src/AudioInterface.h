@@ -56,6 +56,8 @@ protected:
 		GstElement *m_pQueue2;
 		
 	//Appsink, to allow appliction to get audio visualization data
+	bool ConstructVisualizationBin( void );
+	GstElement *m_pVisualizationBin;
 	GstElement *m_pQueue3;
 	GstElement *m_pVisualization;
 	GstElement* m_pAppSink;
