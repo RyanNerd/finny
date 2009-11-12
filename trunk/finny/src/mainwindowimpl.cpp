@@ -229,10 +229,6 @@ void  MainWindowImpl::OnVolume(int volume )
 void  MainWindowImpl::OnMute( bool muted )
 {
 	m_AudioInterface.Mute(muted);
-	if(muted)
-	{
-		Volume->setValue(0);//The next time we turn on volume, we want a low level.
-	}
 }
 void MainWindowImpl::OnRecord( bool start )
 {

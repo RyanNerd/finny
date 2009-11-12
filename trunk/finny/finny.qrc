@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="finny" >
+    <file>assets/sound_off.png</file>
+    <file>assets/sound_on.png</file>
     <file>assets/settings.png</file>
     <file>assets/radioshark.png</file>
     <file>assets/left_arrow.png</file>
