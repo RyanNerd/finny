@@ -15,7 +15,6 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	
 	Presets->setModel(&m_Presets);
 	Visualization->setScene(&m_GraphicsScene);
-	//m_GraphicsScene.setSceneRect(0.0f,0.0f,256.0f,128.0f);
 	
 	this->LoadSettings();
 
