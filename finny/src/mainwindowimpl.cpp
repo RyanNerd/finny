@@ -99,7 +99,7 @@ bool  MainWindowImpl::CheckRadioshark(void)
 		m_AudioInterface.run();
 	}else{
 		//Uh-oh.
-		Frequency->setText("GSTREAMER PROBLEM");
+		ERRORS->setText("GSTREAMER PROBLEM");
 		return false;
 	}
 	this->UpdateFrequencyDisplay();

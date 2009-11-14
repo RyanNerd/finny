@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>577</width>
-    <height>398</height>
+    <width>589</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -603,7 +603,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>Save Preset</string>
+                <string>Save</string>
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
@@ -621,7 +621,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>RemovePreset</string>
+                <string>Remove</string>
                </property>
                <property name="icon">
                 <iconset resource="../finny.qrc">
