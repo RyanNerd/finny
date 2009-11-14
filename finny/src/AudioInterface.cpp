@@ -279,7 +279,7 @@ void AudioInterface::Mute(bool muted)
 	g_object_set( G_OBJECT ( m_pMixer ), "mute", muted,NULL );
 
 }
-void AudioInterface::Record(bool start,const char* filename )
+void AudioInterface::Record(bool start,MP3Settings* settings )
 {
 	if(!m_pPipeline || !m_pBus || ! m_pMP3Recorder)
 	{
@@ -295,25 +295,23 @@ void AudioInterface::Record(bool start,const char* filename )
 		if(start == true)
 		{
 			//Can't start the recording if we're already recording!
+			return;
 		}
 	}
-	string recording_filenameandpath;
-	if(filename == NULL)
-	{
-		recording_filenameandpath = "recording.mp3";
-	}else{
-		recording_filenameandpath = filename;
-	}
+	
 	//We've got to pause in order to insert the bin into our pipeline
 	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PAUSED);
 	//Wait for the EOS message via gst_bus_poll (blocking)
 	GstMessage* pMsg = gst_bus_poll(m_pBus,GST_MESSAGE_ANY,-1);
 
-	if( start )
+	if( start && settings != NULL )
 	{
 		//connect the ghost pad to the tee in the pipeline
 		g_object_set( G_OBJECT ( m_pFile ), "location",
-								recording_filenameandpath.c_str(),NULL );
+								settings->filename.c_str(),NULL );
+		//g_object_set( G_OBJECT ( m_pMP3Encoder, "mode", "xx", NULL);
+		//g_object_set( G_OBJECT ( m_pMP3Encoder, "bitrate", "xx", NULL);
+		
 		gst_bin_add( GST_BIN(m_pPipeline),m_pMP3Recorder);
 		gst_element_link( m_pTeeOne , m_pMP3Recorder);
 	}else{

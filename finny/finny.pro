@@ -16,13 +16,15 @@ HEADERS = src/mainwindowimpl.h \
  src/AudioInterface.h \
  src/radioshark.h \
  src/settingsdialog.h \
- src/finnysettings.h
+ src/finnysettings.h \
+ src/mp3settings.h
 SOURCES = src/mainwindowimpl.cpp \
  src/main.cpp \
  src/AudioInterface.cpp \
  src/radioshark.cpp \
  src/settingsdialog.cpp \
- src/finnysettings.cpp
+ src/finnysettings.cpp \
+ src/mp3settings.cpp
 LIBS = -lhid -lgstinterfaces-0.10 -lgstaudio-0.10 -lgstapp-0.10
 RESOURCES += finny.qrc
 PKGCONFIG += alsa gstreamer-0.10 gstreamer-plugins-base glib-2.0
