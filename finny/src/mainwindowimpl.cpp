@@ -61,7 +61,7 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	if( FindRadioshark(dev) == false )
 	{
 		//No device available... we'll wait another second and check again
-		Frequency->setText("NO RADIOSHARK");
+		ERRORS->setText("NO RADIOSHARK");
 		return false;
 	}
 	//Found the device. Try to set up the system.
@@ -71,19 +71,18 @@ bool  MainWindowImpl::CheckRadioshark(void)
 		if( m_pRadioshark->Open() == false)
 		{
 			//No hid device available..
-			Frequency->setText("HID PROBLEM");
+			ERRORS->setText("HID PROBLEM");
 			return false;
 		}
 		this->UpdateFrequencyDisplay();
 	}else{
 		//no radioshark yet!
-		Frequency->setText("HID PROBLEM");
+		ERRORS->setText("HID PROBLEM");
 		return false;
 	}
 	
 	//Open the actual audio capture.
 	if( m_AudioInterface.Open(dev,string("hw:0,0")) )
-//	if( m_AudioInterface.Open(dev,string("default")) )
 	{
 		//Set the start frequency
 		if(m_Settings.StartFreq.GetBand() == Preset::AM)

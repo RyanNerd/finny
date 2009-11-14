@@ -410,8 +410,25 @@ oneil.code@gmail.com</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>RecordingPathBrowse</sender>
+   <signal>pressed()</signal>
+   <receiver>Dialog</receiver>
+   <slot>OnRecordingPathBrowse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>96</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>173</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OnBandChange(int)</slot>
+  <slot>OnRecordingPathBrowse()</slot>
  </slots>
 </ui>
