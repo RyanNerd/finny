@@ -1,4 +1,5 @@
 #include "settingsdialog.h"
+#include <QFileDialog>
 //
 SettingsDialog::SettingsDialog( QWidget * parent, Qt::WFlags f) 
 	: QDialog(parent, f)
@@ -74,6 +75,15 @@ void SettingsDialog::OnBandChange(int band)
 		StartFreq->setMaximum(108.0);
 		StartFreq->setSingleStep(0.1);
 		StartFreq->setValue(99.5);
+	}
+}
+void SettingsDialog::OnRecordingPathBrowse()
+{
+	QString newpath= QFileDialog::getExistingDirectory(this,
+		tr("MP3 Recording Directory"), RecordingPath->text());
+	if(!newpath.isNull())
+	{
+		RecordingPath->setText(newpath);
 	}
 }
 //

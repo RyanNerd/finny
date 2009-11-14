@@ -19,6 +19,7 @@ private slots:
 
 public slots:
 	void OnBandChange(int band);
+	void OnRecordingPathBrowse();
 };
 #endif
 
