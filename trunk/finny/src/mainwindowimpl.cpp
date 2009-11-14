@@ -4,6 +4,7 @@
 #include <QStandardItem>
 #include <QList>
 #include <QModelIndex>
+#include <QFileDialog>
 #include  <alsa/asoundlib.h>
 #include <time.h>
 
@@ -236,10 +237,25 @@ void MainWindowImpl::OnRecord( bool start )
 	if(start == true && m_pRadioshark )
 	{
 		MP3Settings settings;
-		string station_date_time;
-		m_pRadioshark->ToStationTimeDateString(station_date_time);
-		settings.filename = m_Settings.RecordingPath + "/"
+		if(m_Settings.AutogenerateRecordingNames)
+		{
+			string station_date_time;
+			m_pRadioshark->ToStationTimeDateString(station_date_time);
+			settings.filename = m_Settings.RecordingPath + "/"
 									+ station_date_time +".mp3";
+		}else{
+			QString home = m_Settings.RecordingPath.c_str();
+			home+="/recording.mp3";
+			QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+									 home,
+									tr("MP3 Files (*.mp3)"));
+			if(fileName.isNull())
+			{
+				return;
+			}
+		}
+		settings.bitrate = m_Settings.MP3.bitrate;
+		settings.mode = m_Settings.MP3.mode;
 		//TODO: CHECK THE FORMEDNESS OF THE RECORDING NAME AND PATH
 		//TODO: CHECK PERMISSIONS OF THE RECORDING PATH
 		//TODO: CHECK EXISTENCE OF THE RECORDING PATH

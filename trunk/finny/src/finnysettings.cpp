@@ -136,6 +136,12 @@ void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
 		getline(infile,settings.RecordingPath);
 		settings.RecordingPath = settings.RecordingPath.substr(
 						settings.RecordingPath.find_first_not_of(' '));
+	}else if( key == "MP3")
+	{
+		settings.MP3.Read(infile);
+	}else if (key == "AutogenerateRecordingNames:")
+	{
+		FinnySettings::ReadBool(infile,settings.AutogenerateRecordingNames);
 	}
 }
 void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
@@ -150,6 +156,9 @@ void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
 	FinnySettings::WriteBool(outfile,settings.UpdateStartVolumeOnClose);
 	outfile<<"SETTING: RecordingPath ";
 	outfile<<settings.RecordingPath<<endl;
+	settings.MP3.Write(outfile);
+	outfile<<"SETTING: AutogenerateRecordingNames ";
+	FinnySettings::WriteBool(outfile,settings.AutogenerateRecordingNames);
 }
 void FinnySettings::ReadBool(ifstream& infile, bool& value)
 {

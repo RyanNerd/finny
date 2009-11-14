@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>347</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -311,7 +311,7 @@ oneil.code@gmail.com</string>
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="MP3Bitrate">
+              <widget class="QComboBox" name="MP3Format">
                <item>
                 <property name="text">
                  <string>Stereo</string>
