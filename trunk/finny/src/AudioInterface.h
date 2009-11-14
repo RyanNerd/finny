@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 
+#include "mp3settings.h"
+
 /*
 	cat /proc/asound/pcm
 	gst-launch-0.10 alsasrc device=hw:1,0 ! audioconvert ! alsasink device=hw:0,0
@@ -73,7 +75,7 @@ public:
 	void UpdateVolume( int vol );
 	int GetVolume(void);
 	void Mute(bool muted);
-	void Record(bool start,const char* filename = NULL );
+	void Record(bool start,MP3Settings* settings = NULL );
 	float GetAudioLevel(void);
 	bool GetAudioFormat( AudioFormat& format);
 	bool GetVisualizationFrame( char** data, int& width, int& height,int& buffersize);

@@ -29,45 +29,64 @@
    <item>
     <widget class="QTabWidget" name="Tabs">
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="AboutTab">
       <attribute name="title">
        <string>About</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>205</width>
-           <height>191</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../finny.qrc">:/finny/assets/radioshark.png</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Finny Version 0.5 Beta
+        <widget class="QWidget" name="widget_5" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>205</width>
+              <height>191</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="../finny.qrc">:/finny/assets/radioshark.png</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_6" native="true">
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Finny Version 0.5 Beta
 By John O'Neil
 oneil.code@gmail.com</string>
-         </property>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="Reset">
+               <property name="text">
+                <string>Reset Default Settings</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -225,42 +244,7 @@ oneil.code@gmail.com</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="VisualizationTab">
-      <attribute name="title">
-       <string>Visualization</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Plugin</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QComboBox" name="comboBox_2"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_4">
-         <property name="title">
-          <string>Radioshark LEDs</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <item>
-           <widget class="QCheckBox" name="EnableRadiosharkLEDControl">
-            <property name="text">
-             <string>Enable LED Feedback</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="RecordingTab">
       <attribute name="title">
        <string>Recording</string>
       </attribute>
@@ -291,26 +275,100 @@ oneil.code@gmail.com</string>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>Recording Scheduler</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_9">
-          <item>
-           <widget class="QCheckBox" name="EnableRecordingScheduler">
-            <property name="text">
-             <string>Enable Recording Scheduler Button on GUI</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="groupBox_6">
          <property name="title">
           <string>MP3 Settings</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QWidget" name="widget_2" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QRadioButton" name="AutoGenerateMP3Filenames">
+               <property name="text">
+                <string>Auto generate filenames</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="BrowseMP3Filenames">
+               <property name="text">
+                <string>Browse</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_4" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>File Format</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="MP3Bitrate">
+               <item>
+                <property name="text">
+                 <string>Stereo</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Joint-Stereo</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Dual Channel</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Mono</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Auto</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_3" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Bitrate</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="Bitrate">
+               <property name="minimum">
+                <number>8</number>
+               </property>
+               <property name="maximum">
+                <number>320</number>
+               </property>
+               <property name="value">
+                <number>128</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -426,9 +484,26 @@ oneil.code@gmail.com</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>Reset</sender>
+   <signal>pressed()</signal>
+   <receiver>Dialog</receiver>
+   <slot>OnResetDefaultSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>286</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>173</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OnBandChange(int)</slot>
   <slot>OnRecordingPathBrowse()</slot>
+  <slot>OnResetDefaultSettings()</slot>
  </slots>
 </ui>

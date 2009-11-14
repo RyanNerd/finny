@@ -235,14 +235,16 @@ void MainWindowImpl::OnRecord( bool start )
 	//recording fielname with station, time and data, (.mp3)
 	if(start == true && m_pRadioshark )
 	{
+		MP3Settings settings;
 		string station_date_time;
 		m_pRadioshark->ToStationTimeDateString(station_date_time);
-		string filename_and_path = m_Settings.RecordingPath + "/"
+		settings.filename = m_Settings.RecordingPath + "/"
 									+ station_date_time +".mp3";
 		//TODO: CHECK THE FORMEDNESS OF THE RECORDING NAME AND PATH
 		//TODO: CHECK PERMISSIONS OF THE RECORDING PATH
-		//TODO: CHECK EXISTANCE OF THE RECORDING PATH
-		m_AudioInterface.Record(true,filename_and_path.c_str());
+		//TODO: CHECK EXISTENCE OF THE RECORDING PATH
+		
+		m_AudioInterface.Record(true,&settings);
 		
 	}else{
 		m_AudioInterface.Record(false);

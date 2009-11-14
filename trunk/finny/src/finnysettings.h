@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include "mp3settings.h"
 
 using namespace std;
 
