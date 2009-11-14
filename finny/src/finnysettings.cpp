@@ -131,6 +131,11 @@ void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
 	}else if(key == "UpdateStartVolumeOnClose")
 	{
 		FinnySettings::ReadBool(infile,settings.UpdateStartVolumeOnClose);
+	}else if(key ==  "RecordingPath")
+	{
+		getline(infile,settings.RecordingPath);
+		settings.RecordingPath = settings.RecordingPath.substr(
+						settings.RecordingPath.find_first_not_of(' '));
 	}
 }
 void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
@@ -143,6 +148,8 @@ void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
 	FinnySettings::WriteFloat(outfile,settings.StartVolume);
 	outfile<<"SETTING: UpdateStartVolumeOnClose ";
 	FinnySettings::WriteBool(outfile,settings.UpdateStartVolumeOnClose);
+	outfile<<"SETTING: RecordingPath ";
+	outfile<<settings.RecordingPath<<endl;
 }
 void FinnySettings::ReadBool(ifstream& infile, bool& value)
 {

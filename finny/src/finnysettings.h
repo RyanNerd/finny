@@ -50,12 +50,14 @@ struct FinnySettings
 	bool UpdateStartFreqOnClose;
 	float StartVolume;
 	bool UpdateStartVolumeOnClose;
+	string RecordingPath;
 	
 	FinnySettings()
 		:StartFreq(false,99.5f)
 		,UpdateStartFreqOnClose(true)
 		,StartVolume(0.0f)
 		,UpdateStartVolumeOnClose(false)
+		,RecordingPath("./")
 	{
 		
 	};

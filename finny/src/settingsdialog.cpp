@@ -34,6 +34,7 @@ void SettingsDialog::Set( FinnySettings& settings)
 	}else{
 		StartAtVolume->setChecked(true);
 	}
+	RecordingPath->setText( settings.RecordingPath.c_str() );
 }
 //Get the current settings
 void SettingsDialog::Get( FinnySettings& settings)
@@ -58,6 +59,7 @@ void SettingsDialog::Get( FinnySettings& settings)
 		settings.UpdateStartVolumeOnClose = false;
 		settings.StartVolume = (float)FixedVolume->value();
 	}
+	settings.RecordingPath = string(RecordingPath->text().toAscii());
 }
 void SettingsDialog::OnBandChange(int band)
 {

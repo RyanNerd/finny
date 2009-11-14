@@ -5,6 +5,7 @@
 #include <QList>
 #include <QModelIndex>
 #include  <alsa/asoundlib.h>
+#include <time.h>
 
 //
 MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f) 
@@ -231,7 +232,23 @@ void  MainWindowImpl::OnMute( bool muted )
 }
 void MainWindowImpl::OnRecord( bool start )
 {
-	m_AudioInterface.Record(start);
+	//if we're starting a new recording we form the new
+	//recording fielname with station, time and data, (.mp3)
+	if(start == true && m_pRadioshark )
+	{
+		string station_date_time;
+		m_pRadioshark->ToStationTimeDateString(station_date_time);
+		string filename_and_path = m_Settings.RecordingPath + "/"
+									+ station_date_time +".mp3";
+		//TODO: CHECK THE FORMEDNESS OF THE RECORDING NAME AND PATH
+		//TODO: CHECK PERMISSIONS OF THE RECORDING PATH
+		//TODO: CHECK EXISTANCE OF THE RECORDING PATH
+		m_AudioInterface.Record(true,filename_and_path.c_str());
+		
+	}else{
+		m_AudioInterface.Record(false);
+	}
+	
 }
 void MainWindowImpl::OnBandChange(void)
 {

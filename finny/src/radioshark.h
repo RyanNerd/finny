@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <hid.h>
+#include <string>
 
 #define DEBUG false		/* Set true for copious debugging output */
 #define SHARK_VENDID 0x077d	/* Griffin's Vendor ID */
@@ -52,6 +53,7 @@ class AbstractRadiosharkInterface{
 	virtual void SetRedLED( bool on )=0;
 	virtual void SetBlueLED( float zero_to_one ) = 0;
 	
+	bool ToStationTimeDateString(std::string& str);
 	
 	protected:
 	float m_FMFreq;
