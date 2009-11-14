@@ -1,4 +1,5 @@
 #include "radioshark.h"
+#include <time.h>
 
 AbstractRadiosharkInterface::AbstractRadiosharkInterface()
 :m_FMFreq(99.5f)
@@ -79,6 +80,33 @@ float AbstractRadiosharkInterface::GetAMFreq(void)
 Radioshark::Band  AbstractRadiosharkInterface::GetBand(void)
 {
 	return m_Band;
+}
+bool  AbstractRadiosharkInterface::ToStationTimeDateString(std::string& str)
+{
+
+	char buffer[200];
+	time_t t;
+	struct tm *tmp;
+	t = time(NULL);
+	tmp = localtime(&t);
+	if (tmp == NULL)
+	{
+		
+	}else{
+		strftime(buffer,200, "%a-%b-%d-%y-%I%M%S%p", tmp);
+	}
+	std::string time(buffer);
+
+	if( this->GetBand() == Radioshark::AM)
+	{
+		sprintf(buffer,"AM%3.0f",this->GetAMFreq());
+	}else{
+		sprintf(buffer,"FM%3.1f",this->GetFMFreq());
+	}
+	std::string station(buffer);
+	str = station+"_"+time;
+
+	return true;
 }
 
 Radioshark2Interface::Radioshark2Interface()

@@ -2,6 +2,7 @@
 #include "AudioInterface.h"
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 
 void AudioInterface::run()
@@ -294,7 +295,6 @@ void AudioInterface::Record(bool start,const char* filename )
 	}else{
 		recording_filenameandpath = filename;
 	}
-	
 	//We've got to pause in order to insert the bin into our pipeline
 	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PAUSED);
 	//Wait for the EOS message via gst_bus_poll (blocking)
@@ -434,5 +434,6 @@ void AudioInterface::SetVisualizationSize(int& width_hint, int& height_hint)
 	gst_object_unref(pad);
 	
 }
+
 
 
