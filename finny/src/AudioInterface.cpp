@@ -31,10 +31,21 @@ void AudioInterface::stop()
 }
 
 AudioInterface::AudioInterface()
-	:m_pElementIn(NULL)
-	,m_pElementOut(NULL)
-	,m_pPipeline(NULL)
-	,m_pVisualizationBin(NULL)
+		:m_pPipeline(NULL)
+		,m_pElementIn(NULL)
+		,m_pElementOut(NULL)
+		,m_pMixer(NULL)
+		,m_pTeeOne(NULL)
+		,m_pQueue1(NULL)
+		,m_pMP3Recorder(NULL)
+		,m_pEncoder(NULL)
+		,m_pFile(NULL)
+		,m_pQueue2(NULL)
+		,m_pVisualizationBin(NULL)
+		,m_pQueue3(NULL)
+		,m_pVisualization(NULL)
+		,m_pAppSink(NULL)
+		,m_pBus(NULL)
 {
 
 };
@@ -65,120 +76,68 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	//Set the src to the desired device
 	g_object_set( G_OBJECT (m_pElementIn ), "device", capture_dev.c_str(),NULL );
 	
+	//We tee after the input. This point will provide input to visualization
+	//AND to any recordings we make.
 	m_pTeeOne = gst_element_factory_make("tee", "tee1");
 	if(!m_pTeeOne)
 	{
 		return false;
 	}
 	
+	//After all tees we require a queue. Without them Gstreamer fails. Go figure.
 	m_pQueue1 = gst_element_factory_make("queue", "queue1");
 	if(!m_pQueue1)
 	{
 		return false;
 	}
 	
+	//Simple volume control. So we don't need a mixer.
 	m_pMixer= gst_element_factory_make("volume", "volume");
 	if(!m_pMixer)
 	{
 		return false;
 	}
-	//Set the mixer to the desired device
+	//Set the volume to a tentative level.
 	g_object_set( G_OBJECT ( m_pMixer ), "volume", 0.0,NULL );
 
+	//And our output device.
 	m_pElementOut= gst_element_factory_make("alsasink","sink");
 	if(!m_pElementOut)
-	{
-		return false;
-	}
-	//Another tee (to tap off scope info
-	m_TeeTwo = gst_element_factory_make("tee", "tee2");
-	if(!m_pElementOut)
-	{
-		return false;
-	}
-	m_pQueue4 = gst_element_factory_make("queue", "queue4");
-	if(!m_pQueue1)
 	{
 		return false;
 	}
 	//Set the sink to the desired device
 	g_object_set( G_OBJECT (m_pElementOut ), "device", output_dev.c_str(),NULL );
 
-		//Add everything to the pipeline
-	gst_bin_add_many (GST_BIN (m_pPipeline), m_pElementIn,m_pTeeOne,m_pMixer,
-						m_pElementOut,m_pQueue1,m_TeeTwo,m_pQueue4, NULL);
-		//Link the pipeline
-	if (!gst_element_link_many (m_pElementIn,m_pTeeOne,m_pQueue1,m_pMixer
-									,m_TeeTwo,m_pQueue4, m_pElementOut , NULL ))
-	{
-		//gst_caps_unref(caps);
-		return false;
-	}
-	//Need a "ghost pad to output to other bins (source)
-	GstPad *teepad1 = gst_element_get_request_pad (m_pTeeOne, "src%d");
-	if(!teepad1)
-	{
-		return false;
-	}
-	gst_element_add_pad (m_pPipeline, gst_ghost_pad_new ("source", teepad1));
-	gst_object_unref (GST_OBJECT (teepad1));
-
-	//Create our MP3 recorder Bin
-	m_pMP3Recorder = gst_bin_new ("MP3");
-	if(!m_pMP3Recorder)
-	{
-		return false;
-	}
-	
-	m_pQueue2 = gst_element_factory_make("queue", "queue2");
-	if(!m_pQueue2)
-	{
-		return false;
-	}
-
-	m_pEncoder = gst_element_factory_make("lame", "lame");
-	if(!m_pEncoder)
-	{
-		return false;
-	}
-	
-	m_pFile = gst_element_factory_make("filesink", "file");
-	if(!m_pFile)
-	{
-		return false;
-	}
-	g_object_set( G_OBJECT ( m_pFile ), "location","test_recording.mp3",NULL );
-
 	//Add everything to the pipeline
-	gst_bin_add_many (GST_BIN (m_pMP3Recorder),m_pQueue2,m_pEncoder,
-											m_pFile, NULL);
-
-//	if ( gst_element_link_many (m_pTeeOne, m_pQueue2, m_pEncoder,
-//									m_pFile, NULL ) == FALSE )
-//	{
-//		return false;
-//	}
-	if ( gst_element_link_many (m_pQueue2, m_pEncoder,
-									m_pFile, NULL ) == FALSE )
+	gst_bin_add_many (GST_BIN (m_pPipeline), m_pElementIn,m_pTeeOne,m_pMixer,
+						m_pElementOut,m_pQueue1, NULL);
+	//Link the pipeline
+	if (!gst_element_link_many (m_pElementIn,m_pTeeOne,m_pQueue1,m_pMixer
+									,m_pElementOut , NULL ))
 	{
 		return false;
 	}
 	
-	//Need a "ghost pad" on the MP3 recorder sink (input)
-	GstPad *pad = gst_element_get_static_pad (m_pQueue2, "sink");
-	gst_element_add_pad (m_pMP3Recorder, gst_ghost_pad_new ("sink", pad));
-	gst_object_unref (GST_OBJECT (pad));
-	
+	//We need to add the visualization too.
 	if( this->ConstructVisualizationBin() == false)
 	{
 		return false;
 	}
+	
 	//Add in the visualization
 	gst_bin_add( GST_BIN(m_pPipeline) , m_pVisualizationBin );
 	if( gst_element_link( m_pTeeOne, m_pVisualizationBin ) == FALSE )
 	{
 		return false;
 	}
+	
+	//We'lll also construct, but not connect our mp3 recorder
+	if(! this->ConstructMP3RecorderBin())
+	{
+		return false;
+	}
+	
 	return true;
 };
 bool AudioInterface::ConstructVisualizationBin( void )
@@ -194,12 +153,12 @@ bool AudioInterface::ConstructVisualizationBin( void )
 	}
 	
 	m_pQueue3= gst_element_factory_make("queue", "queue3");
-	if(!m_pQueue2)
+	if(!m_pQueue3)
 	{
 		return false;
 	}
 	m_pVisualization =  gst_element_factory_make("monoscope", "visualization");
-	if(!m_pAppSink)
+	if(!m_pVisualization)
 	{
 		return false;
 	}
@@ -226,9 +185,58 @@ bool AudioInterface::ConstructVisualizationBin( void )
 
 	return true;
 }
+
+bool AudioInterface::ConstructMP3RecorderBin( void )
+{
+	//Create our MP3 recorder Bin
+	m_pMP3Recorder = gst_bin_new ("MP3");
+	if(!m_pMP3Recorder)
+	{
+		return false;
+	}
+	
+	m_pQueue2 = gst_element_factory_make("queue", "queue2");
+	if(!m_pQueue2)
+	{
+		return false;
+	}
+
+	m_pEncoder = gst_element_factory_make("lame", "lame");
+	if(!m_pEncoder)
+	{
+		return false;
+	}
+	
+	m_pFile = gst_element_factory_make("filesink", "file");
+	if(!m_pFile)
+	{
+		return false;
+	}
+	//Add everything to the bin
+	gst_bin_add_many (GST_BIN (m_pMP3Recorder),m_pQueue2,m_pEncoder,
+											m_pFile, NULL);
+
+	
+	if ( gst_element_link_many (m_pQueue2, m_pEncoder,
+									m_pFile, NULL ) == FALSE )
+	{
+		return false;
+	}
+	
+	//Need a "ghost pad" on the MP3 recorder sink (input)
+	GstPad *pad = gst_element_get_static_pad (m_pQueue2, "sink");
+	gst_element_add_pad (m_pMP3Recorder, gst_ghost_pad_new ("sink", pad));
+	gst_object_unref (GST_OBJECT (pad));
+	
+	return true;
+}
 	
 void AudioInterface::Close(void)
 {
+	if( gst_bin_get_by_name( GST_BIN(m_pPipeline),"MP3") == NULL )
+	{
+		gst_object_unref (GST_OBJECT (m_pMP3Recorder));
+	}
 	gst_object_unref (GST_OBJECT (m_pPipeline));
 };
 
@@ -261,12 +269,33 @@ void AudioInterface::Mute(bool muted)
 	g_object_set( G_OBJECT ( m_pMixer ), "mute", muted,NULL );
 
 }
-void AudioInterface::Record(bool start)
+void AudioInterface::Record(bool start,const char* filename )
 {
-	if(!m_pPipeline || !m_pMP3Recorder || !m_pBus)
+	if(!m_pPipeline || !m_pBus || ! m_pMP3Recorder)
 	{
 		return;
 	}
+	if( gst_bin_get_by_name( GST_BIN(m_pPipeline),"MP3") == NULL )
+	{
+		if(start == false)
+		{
+			return;//Can't stop the recording if we're not recording!
+		}
+	}else{
+		if(start == true)
+		{
+			//Can't start the recording if we're already recording!
+		}
+	}
+	string recording_filenameandpath;
+	if(filename == NULL)
+	{
+		recording_filenameandpath = "recording.mp3";
+	}else{
+		recording_filenameandpath = filename;
+	}
+	
+	//We've got to pause in order to insert the bin into our pipeline
 	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PAUSED);
 	//Wait for the EOS message via gst_bus_poll (blocking)
 	GstMessage* pMsg = gst_bus_poll(m_pBus,GST_MESSAGE_ANY,-1);
@@ -274,12 +303,15 @@ void AudioInterface::Record(bool start)
 	if( start )
 	{
 		//connect the ghost pad to the tee in the pipeline
+		g_object_set( G_OBJECT ( m_pFile ), "location",
+								recording_filenameandpath.c_str(),NULL );
 		gst_bin_add( GST_BIN(m_pPipeline),m_pMP3Recorder);
 		gst_element_link( m_pTeeOne , m_pMP3Recorder);
 	}else{
-		//connect the ghost pad to the tee in the pipeline
+		//disconnect the ghost pad to the tee in the pipeline
 		gst_element_unlink( m_pTeeOne , m_pMP3Recorder);
 		gst_bin_remove( GST_BIN(m_pPipeline),m_pMP3Recorder);
+		gst_element_set_state (GST_ELEMENT (m_pMP3Recorder),GST_STATE_NULL);
 	}
 	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING);
 }
@@ -308,8 +340,6 @@ float AudioInterface::GetAudioLevel(void)
 	rms/=(float)(i/2);
 	rms = sqrt(rms);
 	return rms;
-	//return (float)pSamples[0];
-	//return (float)nbytes;
 }
 bool AudioInterface::GetVisualizationFrame( char** data, int& width, int& height,int& buffersize)
 {
@@ -404,30 +434,5 @@ void AudioInterface::SetVisualizationSize(int& width_hint, int& height_hint)
 	gst_object_unref(pad);
 	
 }
-
-//	GstPad *teepad1;
-//	teepad1 = gst_element_get_request_pad (m_pTeeOne, "src%d");
-//	if(!teepad1)
-//	{
-//		return false;
-//	}
-//	GstPad* sinktee = gst_element_get_pad ( m_pEncoder, "sink");
-//	if( !sinktee )
-//	{
-//		return false;
-//	}
-//	if( gst_pad_link( teepad1, sinktee ) != GST_PAD_LINK_OK )
-//	{
-//		return false;
-//	}
-	//if( !gst_pad_link( gst_element_get_pad(m_pEncoder,"src"),
-	//					gst_element_get_pad(m_pFile,"sink")) )
-	//{
-	//	return false;
-	//}
-//	if( gst_element_link( m_pEncoder, m_pFile) == FALSE )
-//	{
-//		return false;
-//	}
 
 

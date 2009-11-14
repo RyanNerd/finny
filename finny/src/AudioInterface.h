@@ -44,23 +44,21 @@ protected:
 		GstElement* m_pElementOut;
 		GstElement *m_pMixer;
 		GstElement *m_pTeeOne;
-		GstElement *m_TeeTwo;
 		GstElement *m_pQueue1;
-		GstElement *m_pQueue4;
 	
 	//MP3 recording bin (branch off Tee above when on)
+	bool ConstructMP3RecorderBin( void );
 	GstElement *m_pMP3Recorder;
 		GstElement *m_pEncoder;
 		GstElement *m_pFile;
-		//GstElement *m_pAudioConvert;
 		GstElement *m_pQueue2;
 		
 	//Appsink, to allow appliction to get audio visualization data
 	bool ConstructVisualizationBin( void );
 	GstElement *m_pVisualizationBin;
-	GstElement *m_pQueue3;
-	GstElement *m_pVisualization;
-	GstElement* m_pAppSink;
+		GstElement *m_pQueue3;
+		GstElement *m_pVisualization;
+		GstElement* m_pAppSink;
 		
 	//Bus
 	GstBus *m_pBus;
@@ -75,7 +73,7 @@ public:
 	void UpdateVolume( int vol );
 	int GetVolume(void);
 	void Mute(bool muted);
-	void Record(bool start);
+	void Record(bool start,const char* filename = NULL );
 	float GetAudioLevel(void);
 	bool GetAudioFormat( AudioFormat& format);
 	bool GetVisualizationFrame( char** data, int& width, int& height,int& buffersize);
