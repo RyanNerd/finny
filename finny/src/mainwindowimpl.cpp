@@ -82,7 +82,7 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	}
 	
 	//Open the actual audio capture.
-	if( m_AudioInterface.Open(dev,string("hw:0,0")) )
+	if( m_AudioInterface.Open(dev,string("PULSE")) )
 	{
 		//Set the start frequency
 		if(m_Settings.StartFreq.GetBand() == Preset::AM)

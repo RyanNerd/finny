@@ -102,13 +102,22 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	g_object_set( G_OBJECT ( m_pMixer ), "volume", 0.0,NULL );
 
 	//And our output device.
-	m_pElementOut= gst_element_factory_make("alsasink","sink");
-	if(!m_pElementOut)
+	if( output_dev  == "PULSE")
 	{
-		return false;
+		m_pElementOut= gst_element_factory_make("pulsesink","sink");
+		if(!m_pElementOut)
+		{
+			return false;
+		}
+	}else{
+		m_pElementOut= gst_element_factory_make("alsasink","sink");
+		if(!m_pElementOut)
+		{
+			return false;
+		}
+		//Set the sink to the desired device
+		g_object_set( G_OBJECT (m_pElementOut ), "device", output_dev.c_str(),NULL );
 	}
-	//Set the sink to the desired device
-	g_object_set( G_OBJECT (m_pElementOut ), "device", output_dev.c_str(),NULL );
 
 	//Add everything to the pipeline
 	gst_bin_add_many (GST_BIN (m_pPipeline), m_pElementIn,m_pTeeOne,m_pMixer,
