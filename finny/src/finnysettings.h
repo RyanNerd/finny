@@ -42,7 +42,6 @@ protected:
 	Band m_Band;
 	float m_Frequency;
 	string m_Description;
-	
 };
 
 struct FinnySettings
@@ -52,6 +51,8 @@ struct FinnySettings
 	float StartVolume;
 	bool UpdateStartVolumeOnClose;
 	string RecordingPath;
+	MP3Settings MP3;
+	bool AutogenerateRecordingNames;
 	
 	FinnySettings()
 		:StartFreq(false,99.5f)
@@ -59,6 +60,7 @@ struct FinnySettings
 		,StartVolume(0.0f)
 		,UpdateStartVolumeOnClose(false)
 		,RecordingPath("./")
+		,AutogenerateRecordingNames(true)
 	{
 		
 	};

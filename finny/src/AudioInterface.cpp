@@ -309,8 +309,11 @@ void AudioInterface::Record(bool start,MP3Settings* settings )
 		//connect the ghost pad to the tee in the pipeline
 		g_object_set( G_OBJECT ( m_pFile ), "location",
 								settings->filename.c_str(),NULL );
-		//g_object_set( G_OBJECT ( m_pMP3Encoder, "mode", "xx", NULL);
-		//g_object_set( G_OBJECT ( m_pMP3Encoder, "bitrate", "xx", NULL);
+		g_object_set( G_OBJECT ( m_pEncoder) , "mode"
+								,settings->mode
+								, NULL);
+		g_object_set( G_OBJECT ( m_pEncoder ), "bitrate"
+								,settings->bitrate, NULL);
 		
 		gst_bin_add( GST_BIN(m_pPipeline),m_pMP3Recorder);
 		gst_element_link( m_pTeeOne , m_pMP3Recorder);

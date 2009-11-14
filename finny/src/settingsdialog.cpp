@@ -36,6 +36,14 @@ void SettingsDialog::Set( FinnySettings& settings)
 		StartAtVolume->setChecked(true);
 	}
 	RecordingPath->setText( settings.RecordingPath.c_str() );
+	Bitrate->setValue(settings.MP3.bitrate);
+	MP3Format->setCurrentIndex((int)settings.MP3.mode);
+	if( settings.AutogenerateRecordingNames )
+	{
+		AutoGenerateMP3Filenames->setChecked(true);
+	}else{
+		BrowseMP3Filenames->setChecked(true);
+	}
 }
 //Get the current settings
 void SettingsDialog::Get( FinnySettings& settings)
@@ -61,6 +69,9 @@ void SettingsDialog::Get( FinnySettings& settings)
 		settings.StartVolume = (float)FixedVolume->value();
 	}
 	settings.RecordingPath = string(RecordingPath->text().toAscii());
+	settings.MP3.mode = (MP3Settings::Mode) MP3Format->currentIndex();
+	settings.MP3.bitrate = Bitrate->value();
+	settings.AutogenerateRecordingNames = AutoGenerateMP3Filenames->isChecked();
 }
 void SettingsDialog::OnBandChange(int band)
 {
@@ -85,6 +96,10 @@ void SettingsDialog::OnRecordingPathBrowse()
 	{
 		RecordingPath->setText(newpath);
 	}
+}
+void SettingsDialog::OnResetDefaultSettings(void)
+{
+	
 }
 //
 
