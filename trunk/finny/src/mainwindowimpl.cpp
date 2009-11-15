@@ -361,8 +361,8 @@ void MainWindowImpl::OnLevelTimer(void)
 								m_LastFrame.height,QImage::Format_RGB32);
 
 	QTransform transform;
-	transform.scale(Visualization->width()/((double)m_LastFrame.width),
-					Visualization->height()/((double)m_LastFrame.height));
+	transform.scale((Visualization->width()-5)/((double)m_LastFrame.width),
+					(Visualization->height()-5)/((double)m_LastFrame.height));
 
 	m_GraphicsScene.clear();
 	m_GraphicsScene.addPixmap(QPixmap::fromImage(m_LastFrame.Image));
