@@ -15,30 +15,6 @@
 #include <QTimer>
 #include <QGraphicsScene>
 
-struct VisualizationFrame
-{
-	uchar* data;
-	int width;
-	int height;
-	int buffer_size;
-	QImage Image;
-	VisualizationFrame()
-		:data(NULL)
-		,width(0)
-		,height(0)
-		,buffer_size(0)
-	{
-		
-	};
-	~VisualizationFrame()
-	{
-		if(data)
-		{
-			delete [] data;
-		}
-	}
-};
-
 class MainWindowImpl : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
@@ -55,19 +31,12 @@ protected:
 	//Presets for now
 	QStandardItemModel m_Presets;
 	
-	//Timer to update level indicator
-	QTimer m_LevelTimer;
-	
 	void LoadSettings(void);
 	void SaveSettings(void);
 	
 	void GetAudioFormat(void);
 	void UpdateFrequencyDisplay(void);
-	
-	//A visualization "scene"
-	QGraphicsScene m_GraphicsScene;
-	VisualizationFrame m_LastFrame;
-	
+
 	//Look for the Radioshark! (audio capture device)
 	bool FindRadioshark(string& device);
 	bool CheckRadioshark(void);
@@ -86,7 +55,6 @@ private slots:
 	void OnSavePreset(void);
 	void OnPreset(const QModelIndex &index);
 	void OnSettings(void);
-	void OnLevelTimer(void);
 	void OnFastUp(void);
 	void OnFastDown(void);
 	void OnRemovePreset(void);

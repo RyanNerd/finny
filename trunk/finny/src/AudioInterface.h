@@ -56,7 +56,7 @@ protected:
 		GstElement *m_pQueue2;
 		
 	//Appsink, to allow appliction to get audio visualization data
-	bool ConstructVisualizationBin( void );
+	bool ConstructVisualizationBin( unsigned int xwindow_id );
 	GstElement *m_pVisualizationBin;
 		GstElement *m_pQueue3;
 		GstElement *m_pVisualization;
@@ -69,7 +69,8 @@ protected:
 	string m_VisualizationName;
 
 public:
-	bool Open(const string& capture_dev,const string& output_dev);
+	bool Open(const string& capture_dev,const string& output_dev,
+													unsigned int xwindow_id = 0);
 	void run();
 	void stop();
 	void Close(void);
@@ -79,8 +80,6 @@ public:
 	void Record(bool start,MP3Settings* settings = NULL );
 	float GetAudioLevel(void);
 	bool GetAudioFormat( AudioFormat& format);
-	bool GetVisualizationFrame( char** data, int& width, int& height,int& buffersize);
-	void SetVisualizationSize(int& width_hint, int& height_hint);
 	void SetVisualizationName(const string& name);
 };
 

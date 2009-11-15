@@ -3,6 +3,9 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
+#include <gst/interfaces/xoverlay.h>
+#include <QApplication>
+
 
 
 void AudioInterface::run()
@@ -11,7 +14,11 @@ void AudioInterface::run()
 	{
 		return;
 	}
-		
+	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY)
+												!=GST_STATE_CHANGE_SUCCESS )
+	{
+		return;
+	}
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
 												!=GST_STATE_CHANGE_SUCCESS )
 	{
@@ -56,7 +63,8 @@ AudioInterface::~AudioInterface()
 
 };
 
-bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
+bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
+						 unsigned int xwindow_id)
 {
 	//Pipeline first
 	m_pPipeline = gst_pipeline_new ("RADIOSHARK");
@@ -131,7 +139,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	}
 	
 	//We need to add the visualization too.
-	if( this->ConstructVisualizationBin() == false)
+	if( this->ConstructVisualizationBin(xwindow_id) == false)
 	{
 		return false;
 	}
@@ -151,7 +159,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev)
 	
 	return true;
 };
-bool AudioInterface::ConstructVisualizationBin( void )
+bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 {
 	if(m_pVisualizationBin)
 	{
@@ -174,13 +182,16 @@ bool AudioInterface::ConstructVisualizationBin( void )
 	{
 		return false;
 	}
-	m_pAppSink = gst_element_factory_make("appsink", "appsink");
+	m_pAppSink = gst_element_factory_make("ximagesink", "appsink");
 	if(!m_pAppSink)
 	{
 		return false;
 	}
-	gst_app_sink_set_drop(GST_APP_SINK(m_pAppSink),TRUE);
-	gst_app_sink_set_max_buffers (GST_APP_SINK(m_pAppSink),1);
+	gst_element_set_state(m_pAppSink, GST_STATE_READY);
+	QApplication::syncX();
+	gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(m_pAppSink),xwindow_id);
+	//gst_app_sink_set_drop(GST_APP_SINK(m_pAppSink),TRUE);
+	//gst_app_sink_set_max_buffers (GST_APP_SINK(m_pAppSink),1);
 	
 	gst_bin_add_many (GST_BIN (m_pVisualizationBin),m_pQueue3,m_pVisualization,
 												m_pAppSink,NULL);
@@ -353,31 +364,6 @@ float AudioInterface::GetAudioLevel(void)
 	rms = sqrt(rms);
 	return rms;
 }
-bool AudioInterface::GetVisualizationFrame( char** data, int& width, int& height,int& buffersize)
-{
-	width = 1;
-	if(!m_pAppSink || !data )
-	{
-		return false;
-	}
-	GstBuffer* buffer = gst_app_sink_pull_buffer(GST_APP_SINK(m_pAppSink));
-	if(buffer == NULL)
-	{
-		return false;
-	}
-	//For now
-	this->SetVisualizationSize(width,height);
-	if( buffersize != GST_BUFFER_SIZE(buffer) || *data== NULL )
-	{
-		buffersize = GST_BUFFER_SIZE(buffer);
-		delete [] *data;
-		*data = new char[buffersize];
-	}
-
-	memcpy((void*) *data,(void*)GST_BUFFER_DATA(buffer),(size_t)buffersize);
-	gst_buffer_unref( buffer );
-	return true;
-}
 bool AudioInterface::GetAudioFormat( AudioFormat& format)
 {
 	if(!m_pElementIn)
@@ -413,39 +399,7 @@ bool AudioInterface::GetAudioFormat( AudioFormat& format)
 	gst_object_unref(pad);
 	return true;
 }
-void AudioInterface::SetVisualizationSize(int& width_hint, int& height_hint)
-{
-	if( m_pVisualization == NULL)
-	{
-		width_hint = 0;
-		height_hint = 0;
-		return;
-	}
-	
-	if(width_hint < 0 || height_hint < 0)
-	{
-		//We just want to GET the current width, height
-	}else{
-		//Can we set the visualization width height to these values?
-	}
-	GstPad* pad = gst_element_get_pad ( m_pVisualization, "src");
-	if(!pad)
-	{
-		return;
-	}
-	GstCaps *caps = gst_pad_get_negotiated_caps(pad);
-	if(!caps)
-	{
-		return;
-	}
-	const GstStructure *str = gst_caps_get_structure (caps, 0);
-	gst_structure_get_int (str, "width", &width_hint);
-	gst_structure_get_int (str, "height", &height_hint);
-	
-	gst_caps_unref(caps);
-	gst_object_unref(pad);
-	
-}
+
 void AudioInterface::SetVisualizationName(const string& name)
 {
 	m_VisualizationName = name;
