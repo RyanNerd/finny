@@ -32,9 +32,6 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 									SLOT(OnCheckRadiosharkTimer()));
 		m_CheckRadiosharkTimer.start(1000);
 	}
-	
-	//We want Record,SavePreset,Remove preset not visible at start
-	Record->setVisible(false);
 
 }
 void MainWindowImpl::closeEvent(QCloseEvent *event)

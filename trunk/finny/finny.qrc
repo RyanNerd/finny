@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="finny" >
+    <file>assets/onebit_44.png</file>
     <file>assets/onebit_12.png</file>
     <file>assets/onebit_39.png</file>
     <file>assets/onebit_34.png</file>
