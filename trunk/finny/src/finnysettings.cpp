@@ -142,6 +142,11 @@ void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
 	}else if (key == "AutogenerateRecordingNames:")
 	{
 		FinnySettings::ReadBool(infile,settings.AutogenerateRecordingNames);
+	}else if (key == "VisualizationName")
+	{
+		getline(infile,settings.VisualizationName);
+		settings.VisualizationName = settings.VisualizationName.substr(
+						settings.VisualizationName.find_first_not_of(' '));
 	}
 }
 void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
@@ -159,6 +164,7 @@ void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
 	settings.MP3.Write(outfile);
 	outfile<<"SETTING: AutogenerateRecordingNames ";
 	FinnySettings::WriteBool(outfile,settings.AutogenerateRecordingNames);
+	outfile<<"SETTING: VisualizationName "<<settings.VisualizationName<<endl;
 }
 void FinnySettings::ReadBool(ifstream& infile, bool& value)
 {

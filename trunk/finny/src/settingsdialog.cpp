@@ -44,6 +44,11 @@ void SettingsDialog::Set( FinnySettings& settings)
 	}else{
 		BrowseMP3Filenames->setChecked(true);
 	}
+	int index = VisualizationName->findText(settings.VisualizationName.c_str());
+	if(index >= 0)
+	{
+		VisualizationName->setCurrentIndex(index);
+	}
 }
 //Get the current settings
 void SettingsDialog::Get( FinnySettings& settings)
@@ -72,6 +77,9 @@ void SettingsDialog::Get( FinnySettings& settings)
 	settings.MP3.mode = (MP3Settings::Mode) MP3Format->currentIndex();
 	settings.MP3.bitrate = Bitrate->value();
 	settings.AutogenerateRecordingNames = AutoGenerateMP3Filenames->isChecked();
+	settings.VisualizationName = string(VisualizationName->itemText(
+										VisualizationName->currentIndex())
+										.toAscii());
 }
 void SettingsDialog::OnBandChange(int band)
 {

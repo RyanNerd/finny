@@ -53,6 +53,7 @@ struct FinnySettings
 	string RecordingPath;
 	MP3Settings MP3;
 	bool AutogenerateRecordingNames;
+	string VisualizationName;
 	
 	FinnySettings()
 		:StartFreq(false,99.5f)
@@ -61,6 +62,7 @@ struct FinnySettings
 		,UpdateStartVolumeOnClose(false)
 		,RecordingPath("./")
 		,AutogenerateRecordingNames(true)
+		,VisualizationName("monoscope")
 	{
 		
 	};

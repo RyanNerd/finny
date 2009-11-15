@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="Tabs">
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="AboutTab">
       <attribute name="title">
@@ -366,6 +366,110 @@ oneil.code@gmail.com</string>
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="OptionsTab">
+      <attribute name="title">
+       <string>Options</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Visualization</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QWidget" name="widget_7" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Use Visualization:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="VisualizationName">
+               <item>
+                <property name="text">
+                 <string>monoscope</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_bumpscope</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_corona</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_infinite</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_jakdaw</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_jess</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_lv_analyzer</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_lv_scope</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>libvisual_oinksie</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>goom</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>goom2k1</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>After change in visualization, and closing of the settings dialog, an applicaiton restart is required.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
          </layout>
