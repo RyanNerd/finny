@@ -489,23 +489,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QGraphicsView" name="Visualization">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="verticalScrollBarPolicy">
-                <enum>Qt::ScrollBarAlwaysOff</enum>
-               </property>
-               <property name="horizontalScrollBarPolicy">
-                <enum>Qt::ScrollBarAlwaysOff</enum>
-               </property>
-               <property name="optimizationFlags">
-                <set>QGraphicsView::DontAdjustForAntialiasing|QGraphicsView::DontClipPainter|QGraphicsView::DontSavePainterState</set>
-               </property>
-              </widget>
+              <widget class="QWidget" name="Visualization" native="true"/>
              </item>
              <item>
               <widget class="QListView" name="Presets">
@@ -948,22 +932,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>ShowVisualization</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>Visualization</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>281</x>
-     <y>117</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>183</x>
-     <y>213</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>ShowPresets</sender>
    <signal>toggled(bool)</signal>
    <receiver>Presets</receiver>
@@ -976,6 +944,22 @@
     <hint type="destinationlabel">
      <x>461</x>
      <y>213</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ShowVisualization</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Visualization</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>242</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>177</x>
+     <y>241</y>
     </hint>
    </hints>
   </connection>

@@ -5,6 +5,7 @@
 #include <QList>
 #include <QModelIndex>
 #include <QFileDialog>
+#include <QApplication>
 #include  <alsa/asoundlib.h>
 #include <time.h>
 
@@ -16,16 +17,12 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	setupUi(this);
 	
 	Presets->setModel(&m_Presets);
-	Visualization->setScene(&m_GraphicsScene);
 	
 	this->LoadSettings();
 	m_AudioInterface.SetVisualizationName(m_Settings.VisualizationName);
 
 	if( this->CheckRadioshark() == true)
 	{
-		//Start the timer for visualization update.
-		connect(&m_LevelTimer,SIGNAL(timeout()),this,SLOT(OnLevelTimer()));
-		m_LevelTimer.start(40);
 		
 	}else{
 		//Couldn't connect to radioshark
@@ -84,7 +81,11 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	}
 	
 	//Open the actual audio capture.
-	if( m_AudioInterface.Open(dev,string("PULSE")) )
+	//Visualization->setAttribute(Qt::WA_PaintOnScreen);
+	Visualization->setAttribute(Qt::WA_PaintOnScreen);
+	Visualization->setAttribute(Qt::WA_OpaquePaintEvent);
+	Visualization->setAttribute(Qt::WA_NoSystemBackground);
+	if( m_AudioInterface.Open(dev,string("PULSE"),Visualization->winId()) )
 	{
 		//Set the start frequency
 		if(m_Settings.StartFreq.GetBand() == Preset::AM)
@@ -113,10 +114,6 @@ void MainWindowImpl::OnCheckRadiosharkTimer(void)
 	{
 		//Finished setup, let's stop the timer
 		this->m_CheckRadiosharkTimer.stop();
-	
-		//Start the timer for visualization update.
-		connect(&m_LevelTimer,SIGNAL(timeout()),this,SLOT(OnLevelTimer()));
-		m_LevelTimer.start(40);
 	}
 }
 
@@ -347,32 +344,7 @@ void MainWindowImpl::OnSettings(void)
 		settings.Get(m_Settings);
 	}
 }
-void MainWindowImpl::OnLevelTimer(void)
-{
-	if(!Visualization->isVisible())
-	{
-		return;
-	}
-	m_AudioInterface.GetVisualizationFrame((char**)&m_LastFrame.data,
-											m_LastFrame.width,
-											m_LastFrame.height,
-											m_LastFrame.buffer_size);
-	m_LastFrame.Image = QImage((const uchar*)m_LastFrame.data,
-								m_LastFrame.width,
-								m_LastFrame.height,QImage::Format_RGB32);
 
-	QTransform transform;
-	transform.scale((Visualization->width()-5)/((double)m_LastFrame.width),
-					(Visualization->height()-5)/((double)m_LastFrame.height));
-
-	m_GraphicsScene.clear();
-	m_GraphicsScene.addPixmap(QPixmap::fromImage(m_LastFrame.Image));
-	Visualization->setTransform(transform);
-	
-	Visualization->repaint();
-	
-
-}
 void MainWindowImpl::LoadSettings(void)
 {
 	//Find our settings file
