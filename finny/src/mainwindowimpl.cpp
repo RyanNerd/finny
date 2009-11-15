@@ -19,6 +19,7 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	Visualization->setScene(&m_GraphicsScene);
 	
 	this->LoadSettings();
+	m_AudioInterface.SetVisualizationName(m_Settings.VisualizationName);
 
 	if( this->CheckRadioshark() == true)
 	{

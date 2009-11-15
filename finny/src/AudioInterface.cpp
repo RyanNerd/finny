@@ -47,6 +47,7 @@ AudioInterface::AudioInterface()
 		,m_pVisualization(NULL)
 		,m_pAppSink(NULL)
 		,m_pBus(NULL)
+		,m_VisualizationName("monoscope")
 {
 
 };
@@ -167,7 +168,8 @@ bool AudioInterface::ConstructVisualizationBin( void )
 	{
 		return false;
 	}
-	m_pVisualization =  gst_element_factory_make("monoscope", "visualization");
+	m_pVisualization =  gst_element_factory_make(m_VisualizationName.c_str(),
+													"visualization");
 	if(!m_pVisualization)
 	{
 		return false;
@@ -443,6 +445,10 @@ void AudioInterface::SetVisualizationSize(int& width_hint, int& height_hint)
 	gst_caps_unref(caps);
 	gst_object_unref(pad);
 	
+}
+void AudioInterface::SetVisualizationName(const string& name)
+{
+	m_VisualizationName = name;
 }
 
 

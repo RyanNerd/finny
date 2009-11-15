@@ -66,6 +66,7 @@ protected:
 	GstBus *m_pBus;
 	
 	bool m_bRunning;
+	string m_VisualizationName;
 
 public:
 	bool Open(const string& capture_dev,const string& output_dev);
@@ -80,6 +81,7 @@ public:
 	bool GetAudioFormat( AudioFormat& format);
 	bool GetVisualizationFrame( char** data, int& width, int& height,int& buffersize);
 	void SetVisualizationSize(int& width_hint, int& height_hint);
+	void SetVisualizationName(const string& name);
 };
 
 #endif // __AUDIOINTERFACE_H__
