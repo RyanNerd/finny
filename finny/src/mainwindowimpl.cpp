@@ -8,6 +8,8 @@
 #include <QApplication>
 #include  <alsa/asoundlib.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 //
 MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f) 
@@ -345,7 +347,15 @@ void MainWindowImpl::OnSettings(void)
 void MainWindowImpl::LoadSettings(void)
 {
 	//Find our settings file
-	ifstream infile("./finny.settings");
+	char * pHome;
+	string settings_filenameandpath;
+	pHome = getenv ("HOME");
+	if (pHome!=NULL)
+	{
+		settings_filenameandpath = string(pHome);
+	}
+	settings_filenameandpath+="/.finny.settings";
+	ifstream infile(settings_filenameandpath.c_str());
 	if(!infile.is_open())
 	{
 		return;
@@ -372,7 +382,16 @@ void MainWindowImpl::LoadSettings(void)
 }
 void MainWindowImpl::SaveSettings(void)
 {
-	ofstream outfile("./finny.settings");
+	//Find our settings file
+	char * pHome;
+	string settings_filenameandpath;
+	pHome = getenv ("HOME");
+	if (pHome!=NULL)
+	{
+		settings_filenameandpath = string(pHome);
+	}
+	settings_filenameandpath+="/.finny.settings";
+	ofstream outfile(settings_filenameandpath.c_str());
 	if(!outfile.is_open())
 	{
 		return;
