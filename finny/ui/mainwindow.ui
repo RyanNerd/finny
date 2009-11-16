@@ -882,6 +882,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>Settings</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OnSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>528</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SavePreset</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OnSavePreset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>322</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>RemovePreset</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OnRemovePreset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>420</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Record</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>OnRecord(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>362</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OnFreqUp()</slot>
