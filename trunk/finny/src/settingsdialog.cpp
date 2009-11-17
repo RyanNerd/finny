@@ -49,6 +49,7 @@ void SettingsDialog::Set( FinnySettings& settings)
 	{
 		VisualizationName->setCurrentIndex(index);
 	}
+	DisableScreensaver->setChecked(settings.PokeScreensaver);
 }
 //Get the current settings
 void SettingsDialog::Get( FinnySettings& settings)
@@ -80,6 +81,7 @@ void SettingsDialog::Get( FinnySettings& settings)
 	settings.VisualizationName = string(VisualizationName->itemText(
 										VisualizationName->currentIndex())
 										.toAscii());
+	settings.PokeScreensaver = DisableScreensaver->isChecked();
 }
 void SettingsDialog::OnBandChange(int band)
 {
