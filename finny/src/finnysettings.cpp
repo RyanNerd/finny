@@ -147,6 +147,9 @@ void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
 		getline(infile,settings.VisualizationName);
 		settings.VisualizationName = settings.VisualizationName.substr(
 						settings.VisualizationName.find_first_not_of(' '));
+	}else if(key == "PokeScreensaver")
+	{
+		FinnySettings::ReadBool(infile,settings.PokeScreensaver);
 	}
 }
 void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
@@ -165,6 +168,8 @@ void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
 	outfile<<"SETTING: AutogenerateRecordingNames ";
 	FinnySettings::WriteBool(outfile,settings.AutogenerateRecordingNames);
 	outfile<<"SETTING: VisualizationName "<<settings.VisualizationName<<endl;
+	outfile<<"SETTING: PokeScreensaver ";
+	FinnySettings::WriteBool(outfile,settings.PokeScreensaver);
 }
 void FinnySettings::ReadBool(ifstream& infile, bool& value)
 {

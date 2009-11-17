@@ -6,10 +6,13 @@
 #include <QModelIndex>
 #include <QFileDialog>
 #include <QApplication>
+#include <QX11Info>
 #include  <alsa/asoundlib.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <X11/Xlib.h>
 
 //
 MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f) 
@@ -22,7 +25,8 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	
 	this->LoadSettings();
 	m_AudioInterface.SetVisualizationName(m_Settings.VisualizationName);
-
+	ScreensaverPoke( m_Settings.PokeScreensaver);
+	
 	if( this->CheckRadioshark() == true)
 	{
 		
@@ -93,7 +97,7 @@ bool  MainWindowImpl::CheckRadioshark(void)
 		}else{
 			m_pRadioshark->SetFMFreq(m_Settings.StartFreq.GetFreq());
 		}
-		
+		void PokeScreensaver(void);
 		//Set the start volume
 		OnVolume((int)m_Settings.StartVolume);
 		Volume->setValue((int)m_Settings.StartVolume);
@@ -155,7 +159,7 @@ bool MainWindowImpl::FindRadioshark(string& device)
 				{
 					snd_card_get_name (card, &name);
 					if(strncmp(name,"radioSHARK",32) == 0)
-					{
+					{void PokeScreensaver(void);
 						snd_ctl_close(handle);
 						free (name);
 						snprintf (card_id, 32, "hw:%d,%d", card,dev);
@@ -206,7 +210,7 @@ void MainWindowImpl::OnFreqUp(void)
 void MainWindowImpl::OnFreqDown(void)
 {
 	if(!m_pRadioshark)
-	{
+	{void PokeScreensaver(void);
 		return;
 	}
 	if(  m_pRadioshark->GetBand() == Radioshark::FM )
@@ -276,7 +280,7 @@ void MainWindowImpl::OnBandChange(void)
 	}else{
 		m_pRadioshark->SetAM();
 	}
-	this->UpdateFrequencyDisplay();
+	this->UpdateFrequencyDisplay();void PokeScreensaver(void);
 }
 
 void MainWindowImpl::OnSavePreset(void)
@@ -341,6 +345,9 @@ void MainWindowImpl::OnSettings(void)
 	{
 		//update our settings from the dialog.
 		settings.Get(m_Settings);
+		
+		//We may have changed the screensaver supression
+		ScreensaverPoke( m_Settings.PokeScreensaver);
 	}
 }
 
@@ -371,7 +378,7 @@ void MainWindowImpl::LoadSettings(void)
 			string desc;
 			Preset::Read(infile,am,freq,desc);
 			QStandardItem* newitem = new QStandardItem();
-			newitem->setData((double)freq,Qt::UserRole + 1);
+			newitem->setData((double)freq,Qt::UserRole + 1);void PokeScreensaver(void);
 			newitem->setData(am,Qt::UserRole + 2);
 			newitem->setText(QString(desc.c_str()));
 			m_Presets.insertRow(m_Presets.rowCount(),newitem);
@@ -474,4 +481,22 @@ void  MainWindowImpl::GetAudioFormat(void)
 {
 	AudioFormat format;
 	m_AudioInterface.GetAudioFormat(format);
+}
+void MainWindowImpl::PokeScreensaver(void)
+{
+	//This utterly sucks-- we'll correct it somehow.
+	XResetScreenSaver (QX11Info::display ());
+	system("gnome-screensaver-command --poke");
+
+}
+void MainWindowImpl::ScreensaverPoke(bool on)
+{
+	if( on )
+	{
+		connect( &m_ScreensaverPokeTimer, SIGNAL(timeout()),
+								this, SLOT(PokeScreensaver()) );
+		m_ScreensaverPokeTimer.start(30000);
+	}else{
+		m_ScreensaverPokeTimer.stop();
+	}
 }

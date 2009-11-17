@@ -45,6 +45,10 @@ protected:
 	//Save off/load settings
 	FinnySettings m_Settings;
 	
+	//Screensaver supression
+	QTimer m_ScreensaverPokeTimer;
+	void ScreensaverPoke(bool on);
+	
 private slots:
 	void OnFreqUp(void);
 	void OnFreqDown(void);
@@ -59,6 +63,7 @@ private slots:
 	void OnFastDown(void);
 	void OnRemovePreset(void);
 	void OnCheckRadiosharkTimer(void);
+	void PokeScreensaver(void);
 };
 #endif
 

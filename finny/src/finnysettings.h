@@ -54,6 +54,7 @@ struct FinnySettings
 	MP3Settings MP3;
 	bool AutogenerateRecordingNames;
 	string VisualizationName;
+	bool PokeScreensaver;
 	
 	FinnySettings()
 		:StartFreq(false,99.5f)
@@ -63,6 +64,7 @@ struct FinnySettings
 		,RecordingPath("./")
 		,AutogenerateRecordingNames(true)
 		,VisualizationName("monoscope")
+		,PokeScreensaver(true)
 	{
 		
 	};
