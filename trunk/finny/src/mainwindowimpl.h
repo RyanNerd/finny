@@ -29,7 +29,7 @@ public:
 protected:
 
 	AudioInterface m_AudioInterface;
-	Radioshark2Interface* m_pRadioshark;
+	Radioshark::Radioshark2Interface* m_pRadioshark;
 	
 	//Presets for now
 	QStandardItemModel m_Presets;
