@@ -74,7 +74,7 @@ bool  MainWindowImpl::CheckRadioshark(void)
 		return false;
 	}
 	//Found the device. Try to set up the system.
-	m_pRadioshark = new Radioshark2Interface();
+	m_pRadioshark = new Radioshark::Radioshark2Interface();
 	if( m_pRadioshark )
 	{
 		if( m_pRadioshark->Open() == false)
