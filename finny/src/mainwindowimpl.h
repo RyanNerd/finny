@@ -15,6 +15,9 @@
 #include <QTimer>
 #include <QGraphicsScene>
 
+//GLib DBus support to poke the screensaver.
+#include <dbus/dbus-glib.h>
+
 class MainWindowImpl : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
@@ -47,6 +50,10 @@ protected:
 	
 	//Screensaver supression
 	QTimer m_ScreensaverPokeTimer;
+	DBusGConnection *pConnection;
+	DBusGProxy *pProxy;
+	void SetupDBus(void);
+	void CleanupDBus(void);
 	void ScreensaverPoke(bool on);
 	
 private slots:
