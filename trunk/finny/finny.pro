@@ -5,8 +5,8 @@ CONFIG += qt \
  warn_on \
  console \
  link_pkgconfig \
- --libs \
- --cflags
+ --cflags \
+ --libs
 DESTDIR = bin
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -27,4 +27,8 @@ SOURCES = src/mainwindowimpl.cpp \
  src/mp3settings.cpp
 LIBS = -lhid -lgstinterfaces-0.10 -lgstaudio-0.10 -lgstapp-0.10
 RESOURCES += finny.qrc
-PKGCONFIG += alsa gstreamer-0.10 gstreamer-plugins-base glib-2.0
+PKGCONFIG += alsa \
+ gstreamer-0.10 \
+ gstreamer-plugins-base \
+ glib-2.0 \
+ dbus-glib-1

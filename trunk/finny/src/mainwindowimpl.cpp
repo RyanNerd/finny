@@ -14,12 +14,17 @@
 
 #include <X11/Xlib.h>
 
-//
+
 MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f) 
 	: QMainWindow(parent, f)
 	,m_pRadioshark(NULL)
+	,pConnection(NULL)
+	,pProxy(NULL)
 {
 	setupUi(this);
+	
+	//We need DBus to poke screensaver
+	this->SetupDBus();
 	
 	Presets->setModel(&m_Presets);
 	
@@ -43,6 +48,8 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 void MainWindowImpl::closeEvent(QCloseEvent *event)
  {
  	this->SaveSettings();
+ 	
+ 	this->CleanupDBus();
  	
 	if(m_pRadioshark)
 	{
@@ -482,13 +489,37 @@ void  MainWindowImpl::GetAudioFormat(void)
 	AudioFormat format;
 	m_AudioInterface.GetAudioFormat(format);
 }
+void MainWindowImpl::SetupDBus(void)
+{
+	GError *pError = NULL;
+	pConnection = dbus_g_bus_get( DBUS_BUS_SESSION, &pError );
+	if(pConnection == NULL)
+	{
+		g_error_free( pError );
+		return;
+	}
+	pProxy = dbus_g_proxy_new_for_name (pConnection,
+										"org.gnome.ScreenSaver",
+										"/org/gnome/ScreenSaver",
+										"org.gnome.ScreenSaver");
+}
+void MainWindowImpl::CleanupDBus(void)
+{
+	if( pConnection)
+	{
+		dbus_g_connection_unref(pConnection);
+		pConnection = NULL;
+	}
+}
 void MainWindowImpl::PokeScreensaver(void)
 {
-	//This utterly sucks-- we'll correct it somehow.
 	XResetScreenSaver (QX11Info::display ());
-	system("gnome-screensaver-command --poke");
-
+	if( pProxy )
+	{
+		dbus_g_proxy_call_no_reply (pProxy, "SimulateUserActivity",G_TYPE_INVALID);
+	}
 }
+
 void MainWindowImpl::ScreensaverPoke(bool on)
 {
 	if( on )
