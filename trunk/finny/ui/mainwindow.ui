@@ -946,6 +946,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>ShowPresets</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>SavePreset</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>322</x>
+     <y>362</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ShowPresets</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>RemovePreset</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>420</x>
+     <y>362</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OnFreqUp()</slot>
