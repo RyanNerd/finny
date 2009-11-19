@@ -81,6 +81,9 @@ public:
 	float GetAudioLevel(void);
 	bool GetAudioFormat( AudioFormat& format);
 	void SetVisualizationName(const string& name);
+	
+	bool SetVisualization( const string& viz_name, unsigned int xwindow_id,
+							bool stop_pipeline = false );
 };
 
 #endif // __AUDIOINTERFACE_H__

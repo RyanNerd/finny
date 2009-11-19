@@ -355,6 +355,10 @@ void MainWindowImpl::OnSettings(void)
 		
 		//We may have changed the screensaver supression
 		ScreensaverPoke( m_Settings.PokeScreensaver);
+		
+		//We may have changed visualization
+		m_AudioInterface.SetVisualization(m_Settings.VisualizationName,
+											Visualization->winId(),true);
 	}
 }
 
