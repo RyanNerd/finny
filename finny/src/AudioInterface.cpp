@@ -66,18 +66,7 @@ AudioInterface::~AudioInterface()
 bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 						 unsigned int xwindow_id)
 {
-	//Pipeline first
-	m_pPipeline = gst_pipeline_new ("RADIOSHARK");
-	if(!m_pPipeline)
-	{
-		return false;
-	}
-	m_pBus = gst_pipeline_get_bus (GST_PIPELINE (m_pPipeline));
-	if(!m_pBus)
-	{
-		return false;
-	}
-	
+
 	m_pElementIn = gst_element_factory_make("alsasrc","source");
 	if(!m_pElementIn)
 	{
@@ -127,7 +116,20 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 		//Set the sink to the desired device
 		g_object_set( G_OBJECT (m_pElementOut ), "device", output_dev.c_str(),NULL );
 	}
-
+	
+	//We create the pipeline "last" only if all our pipline elements have
+	//been successfully created.
+	m_pPipeline = gst_pipeline_new ("RADIOSHARK");
+	if(!m_pPipeline)
+	{
+		return false;
+	}
+	m_pBus = gst_pipeline_get_bus (GST_PIPELINE (m_pPipeline));
+	if(!m_pBus)
+	{
+		return false;
+	}
+	
 	//Add everything to the pipeline
 	gst_bin_add_many (GST_BIN (m_pPipeline), m_pElementIn,m_pTeeOne,m_pMixer,
 						m_pElementOut,m_pQueue1, NULL);
@@ -137,19 +139,9 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	{
 		return false;
 	}
-	
-	//We need to add the visualization too.
-	if( this->ConstructVisualizationBin(xwindow_id) == false)
-	{
-		return false;
-	}
-	
-	//Add in the visualization
-	gst_bin_add( GST_BIN(m_pPipeline) , m_pVisualizationBin );
-	if( gst_element_link( m_pTeeOne, m_pVisualizationBin ) == FALSE )
-	{
-		return false;
-	}
+
+	//Set our visualization
+	SetVisualization(this->m_VisualizationName,xwindow_id,false);
 	
 	//We'lll also construct, but not connect our mp3 recorder
 	if(! this->ConstructMP3RecorderBin())
@@ -190,8 +182,6 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 	gst_element_set_state(m_pAppSink, GST_STATE_READY);
 	QApplication::syncX();
 	gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(m_pAppSink),xwindow_id);
-	//gst_app_sink_set_drop(GST_APP_SINK(m_pAppSink),TRUE);
-	//gst_app_sink_set_max_buffers (GST_APP_SINK(m_pAppSink),1);
 	
 	gst_bin_add_many (GST_BIN (m_pVisualizationBin),m_pQueue3,m_pVisualization,
 												m_pAppSink,NULL);
@@ -403,6 +393,63 @@ bool AudioInterface::GetAudioFormat( AudioFormat& format)
 void AudioInterface::SetVisualizationName(const string& name)
 {
 	m_VisualizationName = name;
+}
+bool AudioInterface::SetVisualization( const string& viz_name, 
+										unsigned int xwindow_id,
+										bool stop_pipeline)
+{
+	if(!m_pPipeline)
+	{
+		return false;
+	}
+	if(this->m_VisualizationName == viz_name && this->m_pVisualizationBin)
+	{
+		return true;//This one's already playing.
+	}
+	if(this->m_VisualizationName != viz_name && this->m_pVisualizationBin)
+	{
+		//we want a new viz, stop everything and create the new one
+		if( stop_pipeline )
+		{
+			gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY );
+			GstState newstate,pendingstate;
+			if( gst_element_get_state (GST_ELEMENT (m_pPipeline),
+									 &newstate,
+									&pendingstate,
+									GST_CLOCK_TIME_NONE )==GST_STATE_CHANGE_FAILURE)
+			{
+				return false;
+			}
+		}
+		gst_element_unlink( m_pTeeOne , m_pVisualizationBin);
+		gst_bin_remove( GST_BIN(m_pPipeline),m_pVisualizationBin);
+		gst_element_set_state (GST_ELEMENT (m_pVisualizationBin),GST_STATE_NULL);
+		//gst_object_unref (GST_OBJECT (m_pVisualizationBin));
+		m_pVisualizationBin = NULL;
+		//We've gotten rid of the old viz bin!
+	}
+	bool success = false;
+	if(!m_pVisualizationBin)
+	{
+		//Must be the first call, so create our viz_bin
+		this->m_VisualizationName = viz_name;
+		success = this->ConstructVisualizationBin(xwindow_id);
+	}
+
+	//Add in the visualization
+	gst_bin_add( GST_BIN(m_pPipeline) , m_pVisualizationBin );
+	if( gst_element_link( m_pTeeOne, m_pVisualizationBin ) == FALSE )
+	{
+		success = false;
+	}
+		
+	//If we were playing before this call, set playing again.
+	if(stop_pipeline )
+	{
+		gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING );
+	}
+	
+	return success;
 }
 
 
