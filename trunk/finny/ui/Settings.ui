@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="Tabs">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="AboutTab">
       <attribute name="title">
@@ -460,16 +460,6 @@ oneil.code@gmail.com</string>
               </widget>
              </item>
             </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>After change in visualization, and closing of the settings dialog, an applicaiton restart is required.</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
            </widget>
           </item>
          </layout>
