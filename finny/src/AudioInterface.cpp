@@ -36,12 +36,7 @@ void AudioInterface::run()
 		Logger::Write("ERROR: dangling pointer.");
 		return;
 	}
-	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY)
-												!=GST_STATE_CHANGE_SUCCESS )
-	{
-		Logger::Write("ERROR: Can't set pipeline to READY.");
-		return;
-	}
+
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
 												!=GST_STATE_CHANGE_SUCCESS )
 	{
@@ -455,7 +450,7 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 										unsigned int xwindow_id,
 										bool stop_pipeline)
 {
-	Logger::Write("ERROR: AudioInterface::SetVisualization.");
+	Logger::Write("AudioInterface::SetVisualization.");
 	if(!m_pPipeline)
 	{
 		Logger::Write("ERROR: Pipeline absent.");
