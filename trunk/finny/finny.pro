@@ -17,14 +17,16 @@ HEADERS = src/mainwindowimpl.h \
  src/radioshark.h \
  src/settingsdialog.h \
  src/finnysettings.h \
- src/mp3settings.h
+ src/mp3settings.h \
+ src/logging.h
 SOURCES = src/mainwindowimpl.cpp \
  src/main.cpp \
  src/AudioInterface.cpp \
  src/radioshark.cpp \
  src/settingsdialog.cpp \
  src/finnysettings.cpp \
- src/mp3settings.cpp
+ src/mp3settings.cpp \
+ src/logging.cpp
 LIBS = -lhid -lgstinterfaces-0.10 -lgstaudio-0.10 -lgstapp-0.10
 RESOURCES += finny.qrc
 PKGCONFIG += alsa \

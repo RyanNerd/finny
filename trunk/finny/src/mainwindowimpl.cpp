@@ -32,6 +32,7 @@
 #include <stdlib.h>
 
 #include <X11/Xlib.h>
+#include "logging.h"
 
 
 MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f) 
@@ -41,6 +42,9 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	,pProxy(NULL)
 {
 	setupUi(this);
+	
+	//Logging for now
+	Logger::Enable();
 	
 	//We need DBus to poke screensaver
 	this->SetupDBus();
