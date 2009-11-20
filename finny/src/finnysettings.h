@@ -74,6 +74,7 @@ struct FinnySettings
 	bool AutogenerateRecordingNames;
 	string VisualizationName;
 	bool PokeScreensaver;
+	bool LoggingEnabled;
 	
 	FinnySettings()
 		:StartFreq(false,99.5f)
