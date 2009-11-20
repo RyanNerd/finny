@@ -1,3 +1,22 @@
+/*************************************************************************
+	Source code for Finny... A linux frontend for the Griffin Radioshark2
+	Copyright (C) 2009  John O'Neil
+	Email: oneil.code@gmail.com
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ *************************************************************************/
 #ifndef __AUDIOINTERFACE_H__
 #define __AUDIOINTERFACE_H__
 
@@ -11,14 +30,6 @@
 
 #include "mp3settings.h"
 
-/*
-	cat /proc/asound/pcm
-	gst-launch-0.10 alsasrc device=hw:1,0 ! audioconvert ! alsasink device=hw:0,0
-	--cflags glib-2.0 gstreamer-plugins-base  -lgstinterfaces-0.10 -lgstaudio-0.10
-	 gst-launch filesrc location=music.wav ! wavparse ! mpegaudio ! filesink location=music.mp3
-	audioconvert
-	gst-launch -v audiotestsrc ! goom ! ffmpegcolorspace ! xvimagesink
-*/
 using namespace std;
 
 struct AudioFormat
