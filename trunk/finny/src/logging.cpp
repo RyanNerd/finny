@@ -25,15 +25,7 @@ Logger Logger::m_Instance;
 Logger::Logger()
 	:m_bEnabled(false)
 {
-	//Open our logfile in the user's home
-	string dir;
-	char* home_dir = getenv("HOME");
-	if(home_dir!=NULL)
-	{
-		dir = string(home_dir);
-	}
-	dir+="/finny.log";
-	m_Outfile.open(dir.c_str());
+	
 }
 Logger::~Logger()
 {
@@ -47,6 +39,18 @@ void Logger::Write(const char* msg){
 }
 void Logger::Enable(void)
 {
+	if(!m_Instance.m_Outfile.is_open())
+	{
+		//Open our logfile in the user's home
+		string dir;
+		char* home_dir = getenv("HOME");
+		if(home_dir!=NULL)
+		{
+			dir = string(home_dir);
+		}
+		dir+="/finny.log";
+		m_Instance.m_Outfile.open(dir.c_str());
+	}
 	m_Instance.m_bEnabled = true;
 }
 void Logger::Disable(void)
