@@ -42,10 +42,7 @@ MainWindowImpl::MainWindowImpl( QWidget * parent, Qt::WFlags f)
 	,pProxy(NULL)
 {
 	setupUi(this);
-	
-	//Logging for now
-	Logger::Enable();
-	
+
 	//We need DBus to poke screensaver
 	this->SetupDBus();
 	

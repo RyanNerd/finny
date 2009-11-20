@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="Tabs">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="AboutTab">
       <attribute name="title">
@@ -475,6 +475,23 @@ oneil.code@gmail.com</string>
            <widget class="QCheckBox" name="DisableScreensaver">
             <property name="text">
              <string>Disable screensaver while playing</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Logging</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_13">
+          <item>
+           <widget class="QCheckBox" name="Logging">
+            <property name="text">
+             <string>Enable program logging output
+Log file finny.log written in HOME directory.</string>
             </property>
            </widget>
           </item>

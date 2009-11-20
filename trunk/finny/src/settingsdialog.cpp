@@ -19,6 +19,7 @@
  *************************************************************************/
 #include "settingsdialog.h"
 #include <QFileDialog>
+#include "logging.h"
 //
 SettingsDialog::SettingsDialog( QWidget * parent, Qt::WFlags f) 
 	: QDialog(parent, f)
@@ -69,6 +70,7 @@ void SettingsDialog::Set( FinnySettings& settings)
 		VisualizationName->setCurrentIndex(index);
 	}
 	DisableScreensaver->setChecked(settings.PokeScreensaver);
+	Logging->setChecked(Logger::IsEnabled());
 }
 //Get the current settings
 void SettingsDialog::Get( FinnySettings& settings)
@@ -101,6 +103,11 @@ void SettingsDialog::Get( FinnySettings& settings)
 										VisualizationName->currentIndex())
 										.toAscii());
 	settings.PokeScreensaver = DisableScreensaver->isChecked();
+	if( Logging->isChecked()){
+		Logger::Enable();
+	}else{
+		Logger::Disable();
+	}
 }
 void SettingsDialog::OnBandChange(int band)
 {

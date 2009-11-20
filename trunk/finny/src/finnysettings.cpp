@@ -18,6 +18,7 @@
 
  *************************************************************************/
 #include "finnysettings.h"
+#include "logging.h"
 
 void GetToken(string& input,string& token)
 {
@@ -169,6 +170,16 @@ void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
 	}else if(key == "PokeScreensaver")
 	{
 		FinnySettings::ReadBool(infile,settings.PokeScreensaver);
+	}else if(key == "LoggingEnabled")
+	{
+		bool enabled;
+		FinnySettings::ReadBool(infile,enabled);
+		if(enabled)
+		{
+			Logger::Enable();
+		}else{
+			Logger::Disable();
+		}
 	}
 }
 void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
@@ -189,6 +200,8 @@ void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
 	outfile<<"SETTING: VisualizationName "<<settings.VisualizationName<<endl;
 	outfile<<"SETTING: PokeScreensaver ";
 	FinnySettings::WriteBool(outfile,settings.PokeScreensaver);
+	outfile<<"SETTING: LoggingEnabled ";
+	FinnySettings::WriteBool(outfile,Logger::IsEnabled());
 }
 void FinnySettings::ReadBool(ifstream& infile, bool& value)
 {
