@@ -24,22 +24,28 @@
 #include <gst/interfaces/xoverlay.h>
 #include <QApplication>
 
+#include "logging.h"
+
 
 
 void AudioInterface::run()
 {
+	Logger::Write("AudioInterface::run");
 	if(!m_pPipeline || !m_pElementIn || !m_pElementOut)
 	{
+		Logger::Write("ERROR: dangling pointer.");
 		return;
 	}
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY)
 												!=GST_STATE_CHANGE_SUCCESS )
 	{
+		Logger::Write("ERROR: Can't set pipeline to READY.");
 		return;
 	}
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
 												!=GST_STATE_CHANGE_SUCCESS )
 	{
+		Logger::Write("ERROR: Can't set pipeline to PLAYING.");
 		return;
 	}
 
@@ -48,8 +54,10 @@ void AudioInterface::run()
 }
 void AudioInterface::stop()
 {
+	Logger::Write("AudioInterface::stop");
 	if(!m_pPipeline || !m_pElementIn || !m_pElementOut)
 	{
+		Logger::Write("ERROR: Dangling pointer.");
 		return;
 	}
 	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_NULL );
@@ -84,10 +92,11 @@ AudioInterface::~AudioInterface()
 bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 						 unsigned int xwindow_id)
 {
-
+	Logger::Write("AudioInterface::Open.");
 	m_pElementIn = gst_element_factory_make("alsasrc","source");
 	if(!m_pElementIn)
 	{
+		Logger::Write("ERROR: can't create alsasrc.");
 		return false;
 	}
 	//Set the src to the desired device
@@ -98,6 +107,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	m_pTeeOne = gst_element_factory_make("tee", "tee1");
 	if(!m_pTeeOne)
 	{
+		Logger::Write("ERROR: can't create tee one.");
 		return false;
 	}
 	
@@ -105,6 +115,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	m_pQueue1 = gst_element_factory_make("queue", "queue1");
 	if(!m_pQueue1)
 	{
+		Logger::Write("ERROR: can't create queue one.");
 		return false;
 	}
 	
@@ -112,6 +123,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	m_pMixer= gst_element_factory_make("volume", "volume");
 	if(!m_pMixer)
 	{
+		Logger::Write("ERROR: can't create volume.");
 		return false;
 	}
 	//Set the volume to a tentative level.
@@ -123,12 +135,14 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 		m_pElementOut= gst_element_factory_make("pulsesink","sink");
 		if(!m_pElementOut)
 		{
+			Logger::Write("ERROR: can't create pulsesink.");
 			return false;
 		}
 	}else{
 		m_pElementOut= gst_element_factory_make("alsasink","sink");
 		if(!m_pElementOut)
 		{
+			Logger::Write("ERROR: can't create alsasink.");
 			return false;
 		}
 		//Set the sink to the desired device
@@ -140,11 +154,13 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	m_pPipeline = gst_pipeline_new ("RADIOSHARK");
 	if(!m_pPipeline)
 	{
+		Logger::Write("ERROR: can't create pipeline.");
 		return false;
 	}
 	m_pBus = gst_pipeline_get_bus (GST_PIPELINE (m_pPipeline));
 	if(!m_pBus)
 	{
+		Logger::Write("ERROR: can't create pipeline bus.");
 		return false;
 	}
 	
@@ -155,15 +171,20 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	if (!gst_element_link_many (m_pElementIn,m_pTeeOne,m_pQueue1,m_pMixer
 									,m_pElementOut , NULL ))
 	{
+		Logger::Write("ERROR: can't link primary pipeline.");
 		return false;
 	}
 
 	//Set our visualization
-	SetVisualization(this->m_VisualizationName,xwindow_id,false);
+	if( SetVisualization(this->m_VisualizationName,xwindow_id,false)== false)
+	{
+		Logger::Write("ERROR: problem putting visualization in pipeline.");
+	}
 	
 	//We'lll also construct, but not connect our mp3 recorder
 	if(! this->ConstructMP3RecorderBin())
 	{
+		Logger::Write("ERROR: can't create MP3 recorder bin.");
 		return false;
 	}
 	
@@ -171,30 +192,37 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 };
 bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 {
+	Logger::Write("AudioInterface::ConstructVisualizationBin.");
 	if(m_pVisualizationBin)
 	{
+		Logger::Write("ERROR: Attempt to create visualization twice.");
 		return false;//don't initialize it twice!
 	}
 	m_pVisualizationBin = gst_bin_new ("VIZ");
 	if(!m_pVisualizationBin)
 	{
+		Logger::Write("ERROR: can't create visualizatio bin bin..");
 		return false;
 	}
 	
 	m_pQueue3= gst_element_factory_make("queue", "queue3");
 	if(!m_pQueue3)
 	{
+		Logger::Write("ERROR: Can't create queue 3.");
 		return false;
 	}
 	m_pVisualization =  gst_element_factory_make(m_VisualizationName.c_str(),
 													"visualization");
 	if(!m_pVisualization)
 	{
+		Logger::Write("ERROR: Can't create visualzation.");
+		Logger::Write(m_VisualizationName.c_str());
 		return false;
 	}
 	m_pAppSink = gst_element_factory_make("ximagesink", "appsink");
 	if(!m_pAppSink)
 	{
+		Logger::Write("ERROR: Can't create ximagesink.");
 		return false;
 	}
 	gst_element_set_state(m_pAppSink, GST_STATE_READY);
@@ -206,6 +234,7 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 	if ( gst_element_link_many (m_pQueue3, m_pVisualization, m_pAppSink,
 									 NULL ) == FALSE )
 	{
+		Logger::Write("ERROR: Can't link visualization bin contents.");
 		return false;
 	}
 	//Conneect src and sink ghost pads up to input and output of bin
@@ -220,37 +249,42 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 bool AudioInterface::ConstructMP3RecorderBin( void )
 {
 	//Create our MP3 recorder Bin
+	Logger::Write("AudioInterface::ConstructMP3RecorderBin.");
 	m_pMP3Recorder = gst_bin_new ("MP3");
 	if(!m_pMP3Recorder)
 	{
+		Logger::Write("ERROR: Can't create MP3 recorder bin.");
 		return false;
 	}
 	
 	m_pQueue2 = gst_element_factory_make("queue", "queue2");
 	if(!m_pQueue2)
 	{
+		Logger::Write("ERROR: Can't create queue 2.");
 		return false;
 	}
 
 	m_pEncoder = gst_element_factory_make("lame", "lame");
 	if(!m_pEncoder)
 	{
+		Logger::Write("ERROR: Can't create lame element.");
 		return false;
 	}
 	
 	m_pFile = gst_element_factory_make("filesink", "file");
 	if(!m_pFile)
 	{
+		Logger::Write("ERROR: Can't create filesink.");
 		return false;
 	}
 	//Add everything to the bin
 	gst_bin_add_many (GST_BIN (m_pMP3Recorder),m_pQueue2,m_pEncoder,
 											m_pFile, NULL);
-
 	
 	if ( gst_element_link_many (m_pQueue2, m_pEncoder,
 									m_pFile, NULL ) == FALSE )
 	{
+		Logger::Write("ERROR: Can't link MP3 bin contents.");
 		return false;
 	}
 	
@@ -264,6 +298,7 @@ bool AudioInterface::ConstructMP3RecorderBin( void )
 	
 void AudioInterface::Close(void)
 {
+	Logger::Write("AudioInterface::Close.");
 	if( gst_bin_get_by_name( GST_BIN(m_pPipeline),"MP3") == NULL )
 	{
 		gst_object_unref (GST_OBJECT (m_pMP3Recorder));
@@ -302,19 +337,23 @@ void AudioInterface::Mute(bool muted)
 }
 void AudioInterface::Record(bool start,MP3Settings* settings )
 {
+	Logger::Write("AudioInterface::Record.");
 	if(!m_pPipeline || !m_pBus || ! m_pMP3Recorder)
 	{
+		Logger::Write("ERROR: Dangling pointers.");
 		return;
 	}
 	if( gst_bin_get_by_name( GST_BIN(m_pPipeline),"MP3") == NULL )
 	{
 		if(start == false)
 		{
+			Logger::Write("ERROR: not recording.");
 			return;//Can't stop the recording if we're not recording!
 		}
 	}else{
 		if(start == true)
 		{
+			Logger::Write("ERROR: already recording.");
 			//Can't start the recording if we're already recording!
 			return;
 		}
@@ -416,12 +455,15 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 										unsigned int xwindow_id,
 										bool stop_pipeline)
 {
+	Logger::Write("ERROR: AudioInterface::SetVisualization.");
 	if(!m_pPipeline)
 	{
+		Logger::Write("ERROR: Pipeline absent.");
 		return false;
 	}
 	if(this->m_VisualizationName == viz_name && this->m_pVisualizationBin)
 	{
+		Logger::Write("ERROR: Same visalization.");
 		return true;//This one's already playing.
 	}
 	if(this->m_VisualizationName != viz_name && this->m_pVisualizationBin)
@@ -436,6 +478,7 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 									&pendingstate,
 									GST_CLOCK_TIME_NONE )==GST_STATE_CHANGE_FAILURE)
 			{
+				Logger::Write("ERROR: Failed to set pipeline to READY.");
 				return false;
 			}
 		}
@@ -452,12 +495,18 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 		//Must be the first call, so create our viz_bin
 		this->m_VisualizationName = viz_name;
 		success = this->ConstructVisualizationBin(xwindow_id);
+		if(!success)
+		{
+			Logger::Write("ERROR: Could not construct new viz bin.");
+			return false;
+		}
 	}
 
 	//Add in the visualization
 	gst_bin_add( GST_BIN(m_pPipeline) , m_pVisualizationBin );
 	if( gst_element_link( m_pTeeOne, m_pVisualizationBin ) == FALSE )
 	{
+		Logger::Write("ERROR: can't link visualization to tee one.");
 		success = false;
 	}
 		
