@@ -38,7 +38,7 @@ void AudioInterface::run()
 	}
 
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
-												!=GST_STATE_CHANGE_SUCCESS )
+												==GST_STATE_CHANGE_FAILURE )
 	{
 		Logger::Write("ERROR: Can't set pipeline to PLAYING.");
 		return;
@@ -355,7 +355,12 @@ void AudioInterface::Record(bool start,MP3Settings* settings )
 	}
 	
 	//We've got to pause in order to insert the bin into our pipeline
-	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PAUSED);
+	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PAUSED)
+								== GST_STATE_CHANGE_FAILURE)
+	{
+		Logger::Write("ERROR: could not set pipline to PAUSED.");
+		return;
+	}
 	//Wait for the EOS message via gst_bus_poll (blocking)
 	GstMessage* pMsg = gst_bus_poll(m_pBus,GST_MESSAGE_ANY,-1);
 
@@ -378,7 +383,11 @@ void AudioInterface::Record(bool start,MP3Settings* settings )
 		gst_bin_remove( GST_BIN(m_pPipeline),m_pMP3Recorder);
 		gst_element_set_state (GST_ELEMENT (m_pMP3Recorder),GST_STATE_NULL);
 	}
-	gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING);
+	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
+											==GST_STATE_CHANGE_FAILURE)
+	{
+		Logger::Write("ERROR: could not set pipeline back to PLAYING.");
+	}
 }
 float AudioInterface::GetAudioLevel(void)
 {
@@ -466,7 +475,11 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 		//we want a new viz, stop everything and create the new one
 		if( stop_pipeline )
 		{
-			gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY );
+			if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY )
+												== GST_STATE_CHANGE_FAILURE)
+			{
+				return false;
+			}
 			GstState newstate,pendingstate;
 			if( gst_element_get_state (GST_ELEMENT (m_pPipeline),
 									 &newstate,
@@ -508,7 +521,12 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 	//If we were playing before this call, set playing again.
 	if(stop_pipeline )
 	{
-		gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING );
+		if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING )
+											==GST_STATE_CHANGE_FAILURE )
+		{
+			Logger::Write("ERROR: can't set pipline back to PLAYING");
+			return false;
+		}
 	}
 	
 	return success;
