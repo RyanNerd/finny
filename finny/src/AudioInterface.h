@@ -43,7 +43,7 @@ struct AudioFormat
 	//string type;
 };
 
-class AudioInterface //: public QThread
+class AudioInterface
 {
 public:
 	
@@ -75,7 +75,10 @@ protected:
 		
 	//Bus
 	GstBus *m_pBus;
-	
+	static gboolean BusCallback(GstBus *bus,
+									GstMessage *message,
+									gpointer data);
+
 	bool m_bRunning;
 	string m_VisualizationName;
 

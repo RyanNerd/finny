@@ -158,6 +158,9 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 		Logger::Write("ERROR: can't create pipeline bus.");
 		return false;
 	}
+	//Add a watch on the pipeline bus
+	gst_bus_add_watch (m_pBus, AudioInterface::BusCallback,this);
+
 	
 	//Add everything to the pipeline
 	gst_bin_add_many (GST_BIN (m_pPipeline), m_pElementIn,m_pTeeOne,m_pMixer,
@@ -361,8 +364,16 @@ void AudioInterface::Record(bool start,MP3Settings* settings )
 		Logger::Write("ERROR: could not set pipline to PAUSED.");
 		return;
 	}
-	//Wait for the EOS message via gst_bus_poll (blocking)
-	GstMessage* pMsg = gst_bus_poll(m_pBus,GST_MESSAGE_ANY,-1);
+	//Wait for the state to change (up to one second)
+	GstState newstate,pendingstate;
+	if( gst_element_get_state (GST_ELEMENT (m_pPipeline),
+									 &newstate,
+									&pendingstate,
+									1000000000 )==GST_STATE_CHANGE_FAILURE)
+	{
+		Logger::Write("ERROR: Failed to set pipeline to READY.");
+			return;
+	}
 
 	if( start && settings != NULL )
 	{
@@ -480,11 +491,12 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 			{
 				return false;
 			}
+			//Wait for the state to change, up to one second.
 			GstState newstate,pendingstate;
 			if( gst_element_get_state (GST_ELEMENT (m_pPipeline),
 									 &newstate,
 									&pendingstate,
-									GST_CLOCK_TIME_NONE )==GST_STATE_CHANGE_FAILURE)
+									1000000000 )==GST_STATE_CHANGE_FAILURE)
 			{
 				Logger::Write("ERROR: Failed to set pipeline to READY.");
 				return false;
@@ -530,6 +542,63 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 	}
 	
 	return success;
+}
+
+gboolean AudioInterface::BusCallback(GstBus *bus,
+						GstMessage *message,
+						gpointer data)
+{
+	AudioInterface* pthis = reinterpret_cast<AudioInterface*>(data);
+	if(!pthis)
+	{
+		Logger::Write("Could not get pointer in bus callback.");
+		return FALSE;//We stop logging
+	}
+	GError *perror = NULL;
+	gchar *pbuffer = NULL;
+	GstState sOld;
+	GstState sNew;
+	GstState sPending;
+	string error_msg;
+	switch ( GST_MESSAGE_TYPE( message ) )
+	{
+		case GST_MESSAGE_ERROR:
+			gst_message_parse_error (message, &perror, &pbuffer);
+			Logger::Write(pbuffer);
+			break;
+		case GST_MESSAGE_WARNING:
+			gst_message_parse_warning( message, &perror,&pbuffer);
+			error_msg = "GST_WARNING: ";
+			error_msg+= (pbuffer);
+			error_msg+=" in ";
+			error_msg+= GST_ELEMENT_NAME(GST_ELEMENT(message->src) );
+			Logger::Write(error_msg.c_str());
+			break;
+		case GST_MESSAGE_STATE_CHANGED:
+			gst_message_parse_state_changed( message,&sOld,&sNew,&sPending);
+			error_msg="STATE_CHANGED: ";
+			error_msg+= GST_ELEMENT_NAME(GST_MESSAGE_SRC(message));
+			error_msg+=" from ";
+			error_msg+= gst_element_state_get_name(sOld);
+			error_msg+=" to ";
+			error_msg+= gst_element_state_get_name(sNew);
+			Logger::Write(error_msg.c_str());
+			break;
+		default:
+			//all other messages we'll just log for now
+			Logger::Write(GST_MESSAGE_TYPE_NAME(message));
+		break;
+	}
+	if( perror )
+	{
+		g_error_free (perror);
+	}
+	if( pbuffer )
+	{
+		g_free (pbuffer);
+	}
+
+	return TRUE;
 }
 
 
