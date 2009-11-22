@@ -115,7 +115,8 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	Visualization->setAttribute(Qt::WA_PaintOnScreen);
 	Visualization->setAttribute(Qt::WA_OpaquePaintEvent);
 	Visualization->setAttribute(Qt::WA_NoSystemBackground);
-	if( m_AudioInterface.Open(dev,string("PULSE"),Visualization->winId()) )
+	if( m_AudioInterface.Open(dev,string("PULSE"),Visualization->winId(),
+													m_Settings.UseXvimagesink) )
 	{
 		//Set the start frequency
 		if(m_Settings.StartFreq.GetBand() == Preset::AM)

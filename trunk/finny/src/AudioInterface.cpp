@@ -86,7 +86,7 @@ AudioInterface::~AudioInterface()
 };
 
 bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
-						 unsigned int xwindow_id)
+						 unsigned int xwindow_id,bool use_xvimagesink)
 {
 	Logger::Write("AudioInterface::Open.");
 	m_pElementIn = gst_element_factory_make("alsasrc","source");
@@ -114,6 +114,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 		Logger::Write("ERROR: can't create queue one.");
 		return false;
 	}
+	g_object_set( G_OBJECT (m_pQueue1), "leaky",2,NULL );
 	
 	//Simple volume control. So we don't need a mixer.
 	m_pMixer= gst_element_factory_make("volume", "volume");
@@ -175,7 +176,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	}
 
 	//Set our visualization
-	if( SetVisualization(this->m_VisualizationName,xwindow_id,false)== false)
+	if( SetVisualization(this->m_VisualizationName,xwindow_id,false,use_xvimagesink)== false)
 	{
 		Logger::Write("ERROR: problem putting visualization in pipeline.");
 	}
@@ -290,6 +291,7 @@ bool AudioInterface::ConstructMP3RecorderBin( void )
 		Logger::Write("ERROR: Can't create queue 2.");
 		return false;
 	}
+	g_object_set( G_OBJECT (m_pQueue2), "leaky",2,NULL );
 
 	m_pEncoder = gst_element_factory_make("lame", "lame");
 	if(!m_pEncoder)
