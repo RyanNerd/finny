@@ -71,6 +71,12 @@ void SettingsDialog::Set( FinnySettings& settings)
 	}
 	DisableScreensaver->setChecked(settings.PokeScreensaver);
 	Logging->setChecked(Logger::IsEnabled());
+	if(settings.UseXvimagesink)
+	{
+		xvimagesink->setChecked(true);
+	}else{
+		ximagesink->setChecked(true);
+	}
 }
 //Get the current settings
 void SettingsDialog::Get( FinnySettings& settings)
@@ -108,6 +114,7 @@ void SettingsDialog::Get( FinnySettings& settings)
 	}else{
 		Logger::Disable();
 	}
+	settings.UseXvimagesink = xvimagesink->isChecked();
 }
 void SettingsDialog::OnBandChange(int band)
 {

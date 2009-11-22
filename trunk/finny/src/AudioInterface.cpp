@@ -72,6 +72,7 @@ AudioInterface::AudioInterface()
 		,m_pQueue2(NULL)
 		,m_pVisualizationBin(NULL)
 		,m_pQueue3(NULL)
+		,m_pColorspace(NULL)
 		,m_pVisualization(NULL)
 		,m_pAppSink(NULL)
 		,m_pBus(NULL)
@@ -188,7 +189,8 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	
 	return true;
 };
-bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
+bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id,
+												bool use_xvimagesink )
 {
 	Logger::Write("AudioInterface::ConstructVisualizationBin.");
 	if(m_pVisualizationBin)
@@ -209,6 +211,11 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 		Logger::Write("ERROR: Can't create queue 3.");
 		return false;
 	}
+	//If the visualization is large, it can take a long time to draw,
+	//so we want this queue to leak out any "overrun" samples if
+	//the queue fills up
+	g_object_set( G_OBJECT (m_pQueue3), "leaky",2,NULL );
+	
 	m_pVisualization =  gst_element_factory_make(m_VisualizationName.c_str(),
 													"visualization");
 	if(!m_pVisualization)
@@ -217,19 +224,41 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id )
 		Logger::Write(m_VisualizationName.c_str());
 		return false;
 	}
-	m_pAppSink = gst_element_factory_make("ximagesink", "appsink");
-	if(!m_pAppSink)
+	//Insert a colorspace converter before the x image. This will save CPU at
+	//high resolutions.
+	m_pColorspace = gst_element_factory_make("ffmpegcolorspace","ffmpegcolorspace");
+	if(! m_pColorspace )
 	{
-		Logger::Write("ERROR: Can't create ximagesink.");
+		Logger::Write("ERROR: Can't create color space converter.");
 		return false;
+	}
+	
+	//If we want xviimagesink, and it isn't available, then use ximagesink
+	if(use_xvimagesink)
+	{
+			m_pAppSink = gst_element_factory_make("xvimagesink", "xvimagesink");
+		if(!m_pAppSink)
+		{
+			Logger::Write("ERROR: Can't create xvimagesink.");
+		}
+	}
+	if(!use_xvimagesink || ( use_xvimagesink && !m_pAppSink) )
+	{
+		m_pAppSink = gst_element_factory_make("ximagesink", "ximagesink");
+		if(!m_pAppSink)
+		{
+			Logger::Write("ERROR: Can't create ximagesink.");
+			return false;
+		}
 	}
 	gst_element_set_state(m_pAppSink, GST_STATE_READY);
 	QApplication::syncX();
 	gst_x_overlay_set_xwindow_id(GST_X_OVERLAY(m_pAppSink),xwindow_id);
 	
 	gst_bin_add_many (GST_BIN (m_pVisualizationBin),m_pQueue3,m_pVisualization,
-												m_pAppSink,NULL);
-	if ( gst_element_link_many (m_pQueue3, m_pVisualization, m_pAppSink,
+									m_pColorspace,m_pAppSink,NULL);
+	if ( gst_element_link_many (m_pQueue3, m_pVisualization,m_pColorspace,
+									 m_pAppSink,
 									 NULL ) == FALSE )
 	{
 		Logger::Write("ERROR: Can't link visualization bin contents.");
@@ -468,7 +497,8 @@ void AudioInterface::SetVisualizationName(const string& name)
 }
 bool AudioInterface::SetVisualization( const string& viz_name, 
 										unsigned int xwindow_id,
-										bool stop_pipeline)
+										bool stop_pipeline,
+										bool use_xvimagesink)
 {
 	Logger::Write("AudioInterface::SetVisualization.");
 	if(!m_pPipeline)
@@ -476,12 +506,24 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 		Logger::Write("ERROR: Pipeline absent.");
 		return false;
 	}
-	if(this->m_VisualizationName == viz_name && this->m_pVisualizationBin)
+	bool using_xvimagesink_now = false;
+	if(m_pAppSink)
+	{
+		string imagesink_name = GST_ELEMENT_NAME(m_pAppSink);
+		if(imagesink_name == "xvimagesink")
+		{
+			using_xvimagesink_now = true;
+		}
+	}
+	if(this->m_VisualizationName == viz_name && this->m_pVisualizationBin 
+			&& ( using_xvimagesink_now == use_xvimagesink ) )
 	{
 		Logger::Write("ERROR: Same visalization.");
 		return true;//This one's already playing.
 	}
-	if(this->m_VisualizationName != viz_name && this->m_pVisualizationBin)
+	if( this->m_pVisualizationBin &&
+		 ( ( using_xvimagesink_now != use_xvimagesink ) 
+		 	|| this->m_VisualizationName != viz_name  ) )
 	{
 		//we want a new viz, stop everything and create the new one
 		if( stop_pipeline )
@@ -514,7 +556,7 @@ bool AudioInterface::SetVisualization( const string& viz_name,
 	{
 		//Must be the first call, so create our viz_bin
 		this->m_VisualizationName = viz_name;
-		success = this->ConstructVisualizationBin(xwindow_id);
+		success = this->ConstructVisualizationBin(xwindow_id,use_xvimagesink);
 		if(!success)
 		{
 			Logger::Write("ERROR: Could not construct new viz bin.");

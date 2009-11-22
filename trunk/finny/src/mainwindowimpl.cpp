@@ -378,7 +378,8 @@ void MainWindowImpl::OnSettings(void)
 		
 		//We may have changed visualization
 		m_AudioInterface.SetVisualization(m_Settings.VisualizationName,
-											Visualization->winId(),true);
+											Visualization->winId(),true,
+											m_Settings.UseXvimagesink );
 	}
 }
 
