@@ -24,6 +24,8 @@
 #include <list>
 #include <fstream>
 #include "mp3settings.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -88,7 +90,13 @@ struct FinnySettings
 		,PokeScreensaver(true)
 		,UseXvimagesink(true)
 	{
-		
+		char * pHome;
+		pHome = getenv ("HOME");
+		if (pHome!=NULL)
+		{
+			RecordingPath = string(pHome);
+			RecordingPath+"/";
+		}
 	};
 	//General helpers
 	static void LoadSetting( FinnySettings& settings, ifstream& infile);

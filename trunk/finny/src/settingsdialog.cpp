@@ -142,7 +142,8 @@ void SettingsDialog::OnRecordingPathBrowse()
 }
 void SettingsDialog::OnResetDefaultSettings(void)
 {
-	
+	FinnySettings reset_settings;
+	this->Set(reset_settings);
 }
 //
 
