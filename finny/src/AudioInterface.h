@@ -84,9 +84,10 @@ protected:
 	string m_VisualizationName;
 
 public:
-	bool Open(const string& capture_dev,const string& output_dev,
-													unsigned int xwindow_id = 0,
-													bool use_xvimagesink = false);
+	bool Open(const string& capture_dev,
+				const string& output_dev,
+				unsigned int xwindow_id = 0,
+				bool use_xvimagesink = true);
 	bool run();
 	void stop();
 	void Close(void);
@@ -98,8 +99,10 @@ public:
 	bool GetAudioFormat( AudioFormat& format);
 	void SetVisualizationName(const string& name);
 	
-	bool SetVisualization( const string& viz_name, unsigned int xwindow_id,
-							bool stop_pipeline = false ,bool use_xvimagesink = false);
+	bool SetVisualization( const string& viz_name, 
+							unsigned int xwindow_id,
+							bool stop_pipeline = false ,
+							bool use_xvimagesink = true);
 };
 
 #endif // __AUDIOINTERFACE_H__
