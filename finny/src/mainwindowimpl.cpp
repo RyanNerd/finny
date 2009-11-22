@@ -145,6 +145,11 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	}
 	ERRORS->setText("");
 	this->UpdateFrequencyDisplay();
+	//Perhaps LAME is unavilaible, so disable recording button.
+	if(!m_AudioInterface.CanRecord())
+	{
+		Record->setDisabled(true);
+	}
 	return true;
 }
 void MainWindowImpl::OnCheckRadiosharkTimer(void)

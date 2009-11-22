@@ -683,6 +683,15 @@ gboolean AudioInterface::BusCallback(GstBus *bus,
 
 	return TRUE;
 }
+bool AudioInterface::CanRecord(void)
+{
+	if(!m_pMP3Recorder)
+	{
+		return false;
+	}else{
+		return true;
+	}
+}
 
 
 
