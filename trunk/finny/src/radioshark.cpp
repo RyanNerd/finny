@@ -1,5 +1,6 @@
 #include "radioshark.h"
 #include <time.h>
+#include "logging.h"
 
 
 namespace Radioshark
@@ -24,24 +25,30 @@ namespace Radioshark
 		
 		if(m_pHid)
 		{
-			return false;//already opened.
+			return true;//already opened.
 		}
 	
 		//Initialize the hid library
 		ret = hid_init();
 		if (ret != HID_RET_SUCCESS) {
+			Logger::Write("HID ERROR: Could not init hid.");
 			return false;
 		}
 	
 		//Initialize the hid object
 		m_pHid = hid_new_HIDInterface();
 		if ( !m_pHid ) {
+			Logger::Write("HID ERROR: Could not get new HID interface.");
 			return false;
 		}
 	
 		//Open the shark
 		ret = hid_force_open(m_pHid, 2, &matcher, 3);
 		if (ret != HID_RET_SUCCESS) {
+			Logger::Write("HID ERROR: Could not open HID");
+			//make sure we clean up
+			this->Close();
+			m_pHid = NULL;
 			return false;
 		}
 		return true;

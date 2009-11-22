@@ -89,29 +89,32 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	string dev;
 	if( FindRadioshark(dev) == false )
 	{
-		//No device available... we'll wait another second and check again
+		Logger::Write("ERROR:Could not find radioSHARK device. I'll keep looking...");
 		ERRORS->setText("NO RADIOSHARK");
 		return false;
 	}
-	//Found the device. Try to set up the system.
-	m_pRadioshark = new Radioshark::Radioshark2Interface();
+	//Found the device. If necessary initialize HID
+	if(!m_pRadioshark)
+	{
+		Logger::Write("Created radioshark HID device.");
+		m_pRadioshark = new Radioshark::Radioshark2Interface();
+	}
 	if( m_pRadioshark )
 	{
 		if( m_pRadioshark->Open() == false)
 		{
-			//No hid device available..
+			Logger::Write("ERROR: Problem opening HID device.");
 			ERRORS->setText("HID PROBLEM");
 			return false;
 		}
 		this->UpdateFrequencyDisplay();
 	}else{
-		//no radioshark yet!
-		ERRORS->setText("HID PROBLEM");
+		Logger::Write("ERROR: The hid device pointer is undefined.");
+		ERRORS->setText("HID ABSENT");
 		return false;
 	}
 	
 	//Open the actual audio capture.
-	//Visualization->setAttribute(Qt::WA_PaintOnScreen);
 	Visualization->setAttribute(Qt::WA_PaintOnScreen);
 	Visualization->setAttribute(Qt::WA_OpaquePaintEvent);
 	Visualization->setAttribute(Qt::WA_NoSystemBackground);
@@ -125,12 +128,12 @@ bool  MainWindowImpl::CheckRadioshark(void)
 		}else{
 			m_pRadioshark->SetFMFreq(m_Settings.StartFreq.GetFreq());
 		}
-		void PokeScreensaver(void);
 		//Set the start volume
 		OnVolume((int)m_Settings.StartVolume);
 		Volume->setValue((int)m_Settings.StartVolume);
 		
 		m_AudioInterface.run();
+		ERRORS->setText("");
 	}else{
 		//Uh-oh.
 		ERRORS->setText("GSTREAMER PROBLEM");
