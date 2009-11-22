@@ -103,6 +103,7 @@ public:
 							unsigned int xwindow_id,
 							bool stop_pipeline = false ,
 							bool use_xvimagesink = true);
+	bool CanRecord(void);
 };
 
 #endif // __AUDIOINTERFACE_H__
