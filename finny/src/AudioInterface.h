@@ -85,7 +85,8 @@ protected:
 
 public:
 	bool Open(const string& capture_dev,const string& output_dev,
-													unsigned int xwindow_id = 0);
+													unsigned int xwindow_id = 0,
+													bool use_xvimagesink = false);
 	void run();
 	void stop();
 	void Close(void);
