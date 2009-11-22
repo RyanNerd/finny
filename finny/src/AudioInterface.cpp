@@ -28,23 +28,41 @@
 
 
 
-void AudioInterface::run()
+bool AudioInterface::run()
 {
 	Logger::Write("AudioInterface::run");
 	if(!m_pPipeline || !m_pElementIn || !m_pElementOut)
 	{
 		Logger::Write("ERROR: dangling pointer.");
-		return;
+		return false;
 	}
+		if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_READY)
+												==GST_STATE_CHANGE_FAILURE )
+	{
+		Logger::Write("ERROR: Can't set pipeline to READY.");
+		return false;
+	}
+	//Let's wait for the pipeline to go READY
+	GstState newstate,pendingstate;
+	if( gst_element_get_state (GST_ELEMENT (m_pPipeline),
+									 &newstate,
+									&pendingstate,
+									1000000000 )==GST_STATE_CHANGE_FAILURE)
+	{
+		Logger::Write("ERROR: Failed to set pipeline to READY in time.");
+		return false;
+	}
+
 
 	if(gst_element_set_state (GST_ELEMENT (m_pPipeline),GST_STATE_PLAYING)
 												==GST_STATE_CHANGE_FAILURE )
 	{
 		Logger::Write("ERROR: Can't set pipeline to PLAYING.");
-		return;
+		return false;
 	}
 
 	m_bRunning = true;
+	return true;
 
 }
 void AudioInterface::stop()
@@ -88,6 +106,11 @@ AudioInterface::~AudioInterface()
 bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 						 unsigned int xwindow_id,bool use_xvimagesink)
 {
+	if(m_pPipeline)
+	{
+		Logger::Write("WARING: Trying to open audio interface that's already open.");
+		return true;//Device already open.
+	}
 	Logger::Write("AudioInterface::Open.");
 	m_pElementIn = gst_element_factory_make("alsasrc","source");
 	if(!m_pElementIn)
@@ -196,8 +219,8 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id,
 	Logger::Write("AudioInterface::ConstructVisualizationBin.");
 	if(m_pVisualizationBin)
 	{
-		Logger::Write("ERROR: Attempt to create visualization twice.");
-		return false;//don't initialize it twice!
+		Logger::Write("WARNING: Attempt to create visualization twice.");
+		return true;
 	}
 	m_pVisualizationBin = gst_bin_new ("VIZ");
 	if(!m_pVisualizationBin)
@@ -277,6 +300,12 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id,
 bool AudioInterface::ConstructMP3RecorderBin( void )
 {
 	Logger::Write("AudioInterface::ConstructMP3RecorderBin.");
+	if(m_pMP3Recorder)
+	{
+		Logger::Write("WARNING: Attempt to create m_pMP3Recorder twice.");
+		return true;
+	}
+	
 	//Since lame requires the "Ugly" Gstreamer plugins, if it's
 	//lacking, we will disable recording functionality, but still
 	//let the application run.
