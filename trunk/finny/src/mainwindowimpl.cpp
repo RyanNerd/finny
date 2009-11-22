@@ -114,6 +114,14 @@ bool  MainWindowImpl::CheckRadioshark(void)
 		return false;
 	}
 	
+	//Set the start frequency
+	if(m_Settings.StartFreq.GetBand() == Preset::AM)
+	{
+		m_pRadioshark->SetAMFreq(m_Settings.StartFreq.GetFreq());
+	}else{
+		m_pRadioshark->SetFMFreq(m_Settings.StartFreq.GetFreq());
+	}
+	
 	//Open the actual audio capture.
 	Visualization->setAttribute(Qt::WA_PaintOnScreen);
 	Visualization->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -121,24 +129,21 @@ bool  MainWindowImpl::CheckRadioshark(void)
 	if( m_AudioInterface.Open(dev,string("PULSE"),Visualization->winId(),
 													m_Settings.UseXvimagesink) )
 	{
-		//Set the start frequency
-		if(m_Settings.StartFreq.GetBand() == Preset::AM)
-		{
-			m_pRadioshark->SetAMFreq(m_Settings.StartFreq.GetFreq());
-		}else{
-			m_pRadioshark->SetFMFreq(m_Settings.StartFreq.GetFreq());
-		}
 		//Set the start volume
 		OnVolume((int)m_Settings.StartVolume);
 		Volume->setValue((int)m_Settings.StartVolume);
-		
-		m_AudioInterface.run();
-		ERRORS->setText("");
 	}else{
 		//Uh-oh.
 		ERRORS->setText("GSTREAMER PROBLEM");
 		return false;
 	}
+	//One last thing to do. Try to start the device.
+	if( !m_AudioInterface.run() )
+	{
+		Logger::Write("ERROR: Can't run the audio interface.");
+		return false;
+	}
+	ERRORS->setText("");
 	this->UpdateFrequencyDisplay();
 	return true;
 }
