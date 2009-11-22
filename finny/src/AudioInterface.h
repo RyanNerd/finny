@@ -67,9 +67,10 @@ protected:
 		GstElement *m_pQueue2;
 		
 	//Appsink, to allow appliction to get audio visualization data
-	bool ConstructVisualizationBin( unsigned int xwindow_id );
+	bool ConstructVisualizationBin( unsigned int xwindow_id,bool use_xvimagesink = false );
 	GstElement *m_pVisualizationBin;
 		GstElement *m_pQueue3;
+		GstElement *m_pColorspace;
 		GstElement *m_pVisualization;
 		GstElement* m_pAppSink;
 		
@@ -97,7 +98,7 @@ public:
 	void SetVisualizationName(const string& name);
 	
 	bool SetVisualization( const string& viz_name, unsigned int xwindow_id,
-							bool stop_pipeline = false );
+							bool stop_pipeline = false ,bool use_xvimagesink = false);
 };
 
 #endif // __AUDIOINTERFACE_H__

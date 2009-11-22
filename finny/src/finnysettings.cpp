@@ -180,6 +180,9 @@ void FinnySettings::LoadSetting( FinnySettings& settings, ifstream& infile)
 		}else{
 			Logger::Disable();
 		}
+	}else if(key=="UseXvimagesink")
+	{
+		FinnySettings::ReadBool(infile,settings.UseXvimagesink);
 	}
 }
 void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
@@ -202,6 +205,8 @@ void FinnySettings::WriteSettings( FinnySettings& settings, ofstream& outfile)
 	FinnySettings::WriteBool(outfile,settings.PokeScreensaver);
 	outfile<<"SETTING: LoggingEnabled ";
 	FinnySettings::WriteBool(outfile,Logger::IsEnabled());
+	outfile<<"SETTING: UseXvimagesink ";
+	FinnySettings::WriteBool(outfile,settings.UseXvimagesink);
 }
 void FinnySettings::ReadBool(ifstream& infile, bool& value)
 {

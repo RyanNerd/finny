@@ -75,6 +75,7 @@ struct FinnySettings
 	string VisualizationName;
 	bool PokeScreensaver;
 	bool LoggingEnabled;
+	bool UseXvimagesink;
 	
 	FinnySettings()
 		:StartFreq(false,99.5f)
@@ -85,6 +86,7 @@ struct FinnySettings
 		,AutogenerateRecordingNames(true)
 		,VisualizationName("monoscope")
 		,PokeScreensaver(true)
+		,UseXvimagesink(false)
 	{
 		
 	};
