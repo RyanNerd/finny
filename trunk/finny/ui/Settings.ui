@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="Tabs">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="AboutTab">
       <attribute name="title">
@@ -492,14 +492,14 @@ oneil.code@gmail.com</string>
              <item>
               <widget class="QRadioButton" name="ximagesink">
                <property name="text">
-                <string>Resize Image in CPU</string>
+                <string>Higher quality</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QRadioButton" name="xvimagesink">
                <property name="text">
-                <string>Scale Image</string>
+                <string>Lower quality</string>
                </property>
               </widget>
              </item>
@@ -512,7 +512,7 @@ oneil.code@gmail.com</string>
        <item>
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
-          <string>Scrreensaver</string>
+          <string>Screensaver</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <property name="spacing">
