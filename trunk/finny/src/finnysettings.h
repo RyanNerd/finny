@@ -86,7 +86,7 @@ struct FinnySettings
 		,AutogenerateRecordingNames(true)
 		,VisualizationName("monoscope")
 		,PokeScreensaver(true)
-		,UseXvimagesink(false)
+		,UseXvimagesink(true)
 	{
 		
 	};
