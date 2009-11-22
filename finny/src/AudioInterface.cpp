@@ -185,7 +185,7 @@ bool AudioInterface::Open(const string& capture_dev,const string& output_dev,
 	if(! this->ConstructMP3RecorderBin())
 	{
 		Logger::Write("ERROR: can't create MP3 recorder bin.");
-		return false;
+		Logger::Write("ERROR: MP3 recording will be disabled.");
 	}
 	
 	return true;
@@ -276,12 +276,17 @@ bool AudioInterface::ConstructVisualizationBin(unsigned int xwindow_id,
 
 bool AudioInterface::ConstructMP3RecorderBin( void )
 {
-	//Create our MP3 recorder Bin
 	Logger::Write("AudioInterface::ConstructMP3RecorderBin.");
-	m_pMP3Recorder = gst_bin_new ("MP3");
-	if(!m_pMP3Recorder)
+	//Since lame requires the "Ugly" Gstreamer plugins, if it's
+	//lacking, we will disable recording functionality, but still
+	//let the application run.
+	m_pEncoder = gst_element_factory_make("lame", "lame");
+	if(!m_pEncoder)
 	{
-		Logger::Write("ERROR: Can't create MP3 recorder bin.");
+		Logger::Write("ERROR: Can't create lame element.");
+		Logger::Write("ERROR: If you wish to record MP3, make sure");
+		Logger::Write("ERROR: gstreamer plugin lame is installed.");
+		Logger::Write("ERROR: This usually requires gstreamer-plugins-ugly.");
 		return false;
 	}
 	
@@ -293,12 +298,7 @@ bool AudioInterface::ConstructMP3RecorderBin( void )
 	}
 	g_object_set( G_OBJECT (m_pQueue2), "leaky",2,NULL );
 
-	m_pEncoder = gst_element_factory_make("lame", "lame");
-	if(!m_pEncoder)
-	{
-		Logger::Write("ERROR: Can't create lame element.");
-		return false;
-	}
+
 	
 	m_pFile = gst_element_factory_make("filesink", "file");
 	if(!m_pFile)
@@ -306,6 +306,14 @@ bool AudioInterface::ConstructMP3RecorderBin( void )
 		Logger::Write("ERROR: Can't create filesink.");
 		return false;
 	}
+	
+	m_pMP3Recorder = gst_bin_new ("MP3");
+	if(!m_pMP3Recorder)
+	{
+		Logger::Write("ERROR: Can't create MP3 recorder bin.");
+		return false;
+	}
+	
 	//Add everything to the bin
 	gst_bin_add_many (GST_BIN (m_pMP3Recorder),m_pQueue2,m_pEncoder,
 											m_pFile, NULL);
@@ -313,6 +321,8 @@ bool AudioInterface::ConstructMP3RecorderBin( void )
 	if ( gst_element_link_many (m_pQueue2, m_pEncoder,
 									m_pFile, NULL ) == FALSE )
 	{
+		gst_object_unref(m_pMP3Recorder);
+		m_pMP3Recorder = NULL;
 		Logger::Write("ERROR: Can't link MP3 bin contents.");
 		return false;
 	}
