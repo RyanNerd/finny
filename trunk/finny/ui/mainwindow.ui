@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../finny.qrc">
-    <normaloff>:/finny/assets/radioshark.png</normaloff>:/finny/assets/radioshark.png</iconset>
+    <normaloff>:/finny/assets/finny_icon.png</normaloff>:/finny/assets/finny_icon.png</iconset>
   </property>
   <property name="iconSize">
    <size>

@@ -23,7 +23,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Finny Settings</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../finny.qrc">
+    <normaloff>:/finny/assets/finny_icon.png</normaloff>:/finny/assets/finny_icon.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
