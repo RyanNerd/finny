@@ -33,10 +33,10 @@ mkdir -p packages/${PACKAGE_NAME}/DEBIAN;
 
 #Fill up the file structure
 cp bin/${EXE_NAME} packages/${PACKAGE_NAME}/usr/bin;
-cp scripts/control packages/${PACKAGE_NAME}/DEBIAN;
-cp scripts/debian-binary packages/${PACKAGE_NAME};
-cp scripts/${EXE_NAME}.desktop packages/${PACKAGE_NAME}/usr/share/applications;
-cp scripts/${EXE_NAME} packages/${PACKAGE_NAME}/usr/share/menu;
+cp package/control packages/${PACKAGE_NAME}/DEBIAN;
+cp package/debian-binary packages/${PACKAGE_NAME};
+cp package/${EXE_NAME}.desktop packages/${PACKAGE_NAME}/usr/share/applications;
+cp package/${EXE_NAME} packages/${PACKAGE_NAME}/usr/share/menu;
 cp assets/finny_icon.png packages/${PACKAGE_NAME}/usr/share/pixmaps;
 
 #update versions in relevant files
